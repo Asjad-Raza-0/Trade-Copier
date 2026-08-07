@@ -1,0 +1,687 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "gold_trade_copier_infrastructure",
+        "label": "Gold Trade Copier Infrastructure",
+        "nodes": [
+          "gold_trade_copier_relay_server",
+          "gold_trade_copier_master_ea",
+          "gold_trade_copier_slave_ea"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "gold-trade-copier/SETUP_GUIDE.md"
+      },
+      {
+        "id": "mt5_telegram_integration",
+        "label": "MT5 Telegram Notification System",
+        "nodes": [
+          "telegram_notifier_ea",
+          "telegram_api"
+        ],
+        "relation": "form",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "Telegram Notifier/SETUP_GUIDE.md"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "relay_server.py",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "gold_trade_copier_relay_server",
+      "community": 0,
+      "norm_label": "relay_server.py"
+    },
+    {
+      "label": "get_db()",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L46",
+      "_origin": "ast",
+      "id": "gold_trade_copier_relay_server_get_db",
+      "community": 2,
+      "norm_label": "get_db()"
+    },
+    {
+      "label": "init_db()",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L54",
+      "_origin": "ast",
+      "id": "gold_trade_copier_relay_server_init_db",
+      "community": 2,
+      "norm_label": "init_db()"
+    },
+    {
+      "label": "check_key()",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L88",
+      "_origin": "ast",
+      "id": "gold_trade_copier_relay_server_check_key",
+      "community": 1,
+      "norm_label": "check_key()"
+    },
+    {
+      "label": "is_ip_allowed()",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L92",
+      "_origin": "ast",
+      "id": "gold_trade_copier_relay_server_is_ip_allowed",
+      "community": 4,
+      "norm_label": "is_ip_allowed()"
+    },
+    {
+      "label": "purge_old_events()",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L98",
+      "_origin": "ast",
+      "id": "gold_trade_copier_relay_server_purge_old_events",
+      "community": 2,
+      "norm_label": "purge_old_events()"
+    },
+    {
+      "label": "update_slave_status()",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L125",
+      "_origin": "ast",
+      "id": "gold_trade_copier_relay_server_update_slave_status",
+      "community": 4,
+      "norm_label": "update_slave_status()"
+    },
+    {
+      "label": "health()",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L159",
+      "_origin": "ast",
+      "id": "gold_trade_copier_relay_server_health",
+      "community": 2,
+      "norm_label": "health()"
+    },
+    {
+      "label": "submit_trade()",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L186",
+      "_origin": "ast",
+      "id": "gold_trade_copier_relay_server_submit_trade",
+      "community": 2,
+      "norm_label": "submit_trade()"
+    },
+    {
+      "label": "poll()",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L228",
+      "_origin": "ast",
+      "id": "gold_trade_copier_relay_server_poll",
+      "community": 4,
+      "norm_label": "poll()"
+    },
+    {
+      "label": "list_slaves()",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L318",
+      "_origin": "ast",
+      "id": "gold_trade_copier_relay_server_list_slaves",
+      "community": 1,
+      "norm_label": "list_slaves()"
+    },
+    {
+      "label": "manual_purge()",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L353",
+      "_origin": "ast",
+      "id": "gold_trade_copier_relay_server_manual_purge",
+      "community": 1,
+      "norm_label": "manual_purge()"
+    },
+    {
+      "label": "Gold Trade Copier - Relay Server (Multi-Slave Enterprise Edition) --------------",
+      "file_type": "rationale",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "gold_trade_copier_relay_server_rationale_1",
+      "community": 0,
+      "norm_label": "gold trade copier - relay server (multi-slave enterprise edition) --------------"
+    },
+    {
+      "label": "Monitoring endpoint - view all registered slave VPSs and their status.",
+      "file_type": "rationale",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L319",
+      "_origin": "ast",
+      "id": "gold_trade_copier_relay_server_rationale_319",
+      "community": 1,
+      "norm_label": "monitoring endpoint - view all registered slave vpss and their status."
+    },
+    {
+      "label": "Admin endpoint to manually trigger database and log cache cleanup.",
+      "file_type": "rationale",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L354",
+      "_origin": "ast",
+      "id": "gold_trade_copier_relay_server_rationale_354",
+      "community": 1,
+      "norm_label": "admin endpoint to manually trigger database and log cache cleanup."
+    },
+    {
+      "label": "Gold Trade Copier Setup Guide",
+      "file_type": "document",
+      "source_file": "gold-trade-copier/SETUP_GUIDE.md",
+      "id": "gold_trade_copier_setup_guide",
+      "community": 0,
+      "norm_label": "gold trade copier setup guide"
+    },
+    {
+      "label": "requirements.txt",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/requirements.txt",
+      "id": "gold_trade_copier_requirements",
+      "community": 3,
+      "norm_label": "requirements.txt"
+    },
+    {
+      "label": "GoldMasterRelay.mq5",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/GoldMasterRelay.mq5",
+      "id": "gold_trade_copier_master_ea",
+      "community": 0,
+      "norm_label": "goldmasterrelay.mq5"
+    },
+    {
+      "label": "GoldSlaveRelay.mq5",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/GoldSlaveRelay.mq5",
+      "id": "gold_trade_copier_slave_ea",
+      "community": 0,
+      "norm_label": "goldslaverelay.mq5"
+    },
+    {
+      "label": "Telegram Trade Notifier Setup Guide",
+      "file_type": "document",
+      "source_file": "Telegram Notifier/SETUP_GUIDE.md",
+      "id": "telegram_notifier_setup_guide",
+      "community": 5,
+      "norm_label": "telegram trade notifier setup guide"
+    },
+    {
+      "label": "TelegramNotifier.mq5",
+      "file_type": "code",
+      "source_file": "Telegram Notifier/TelegramNotifier.mq5",
+      "id": "telegram_notifier_ea",
+      "community": 5,
+      "norm_label": "telegramnotifier.mq5"
+    },
+    {
+      "label": "Flask",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/requirements.txt",
+      "id": "flask_library",
+      "community": 3,
+      "norm_label": "flask"
+    },
+    {
+      "label": "Waitress",
+      "file_type": "code",
+      "source_file": "gold-trade-copier/requirements.txt",
+      "id": "waitress_library",
+      "community": 3,
+      "norm_label": "waitress"
+    },
+    {
+      "label": "Telegram Bot API",
+      "file_type": "concept",
+      "source_file": "Telegram Notifier/SETUP_GUIDE.md",
+      "id": "telegram_api",
+      "community": 5,
+      "norm_label": "telegram bot api"
+    },
+    {
+      "label": "NSSM (Non-Sucking Service Manager)",
+      "file_type": "concept",
+      "source_file": "gold-trade-copier/SETUP_GUIDE.md",
+      "id": "nssm_service_manager",
+      "community": 0,
+      "norm_label": "nssm (non-sucking service manager)"
+    }
+  ],
+  "links": [
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "gold-trade-copier/SETUP_GUIDE.md",
+      "source": "gold_trade_copier_master_ea",
+      "target": "gold_trade_copier_relay_server"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L88",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server",
+      "target": "gold_trade_copier_relay_server_check_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server",
+      "target": "gold_trade_copier_relay_server_get_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L159",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server",
+      "target": "gold_trade_copier_relay_server_health",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server",
+      "target": "gold_trade_copier_relay_server_init_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L92",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server",
+      "target": "gold_trade_copier_relay_server_is_ip_allowed",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L318",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server",
+      "target": "gold_trade_copier_relay_server_list_slaves",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L353",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server",
+      "target": "gold_trade_copier_relay_server_manual_purge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L228",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server",
+      "target": "gold_trade_copier_relay_server_poll",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L98",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server",
+      "target": "gold_trade_copier_relay_server_purge_old_events",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L186",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server",
+      "target": "gold_trade_copier_relay_server_submit_trade",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L125",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server",
+      "target": "gold_trade_copier_relay_server_update_slave_status",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "gold-trade-copier/SETUP_GUIDE.md",
+      "source": "gold_trade_copier_relay_server",
+      "target": "gold_trade_copier_requirements"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.8,
+      "source_file": "gold-trade-copier/SETUP_GUIDE.md",
+      "source": "gold_trade_copier_relay_server",
+      "target": "nssm_service_manager"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_rationale_1",
+      "target": "gold_trade_copier_relay_server",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "gold-trade-copier/SETUP_GUIDE.md",
+      "source": "gold_trade_copier_setup_guide",
+      "target": "gold_trade_copier_relay_server"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "gold-trade-copier/SETUP_GUIDE.md",
+      "source": "gold_trade_copier_slave_ea",
+      "target": "gold_trade_copier_relay_server"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L161",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_health",
+      "target": "gold_trade_copier_relay_server_get_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L55",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_init_db",
+      "target": "gold_trade_copier_relay_server_get_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L324",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_list_slaves",
+      "target": "gold_trade_copier_relay_server_get_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L361",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_manual_purge",
+      "target": "gold_trade_copier_relay_server_get_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L245",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_poll",
+      "target": "gold_trade_copier_relay_server_get_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L108",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_purge_old_events",
+      "target": "gold_trade_copier_relay_server_get_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L200",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_submit_trade",
+      "target": "gold_trade_copier_relay_server_get_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L141",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_update_slave_status",
+      "target": "gold_trade_copier_relay_server_get_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L320",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_list_slaves",
+      "target": "gold_trade_copier_relay_server_check_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L355",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_manual_purge",
+      "target": "gold_trade_copier_relay_server_check_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L229",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_poll",
+      "target": "gold_trade_copier_relay_server_check_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L187",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_submit_trade",
+      "target": "gold_trade_copier_relay_server_check_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L232",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_poll",
+      "target": "gold_trade_copier_relay_server_is_ip_allowed",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L223",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_submit_trade",
+      "target": "gold_trade_copier_relay_server_purge_old_events",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L243",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_poll",
+      "target": "gold_trade_copier_relay_server_update_slave_status",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L319",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_rationale_319",
+      "target": "gold_trade_copier_relay_server_list_slaves",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "gold-trade-copier/relay_server.py",
+      "source_location": "L354",
+      "weight": 1.0,
+      "source": "gold_trade_copier_relay_server_rationale_354",
+      "target": "gold_trade_copier_relay_server_manual_purge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "gold-trade-copier/SETUP_GUIDE.md",
+      "source": "gold_trade_copier_setup_guide",
+      "target": "gold_trade_copier_master_ea"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "gold-trade-copier/SETUP_GUIDE.md",
+      "source": "gold_trade_copier_setup_guide",
+      "target": "gold_trade_copier_slave_ea"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "gold-trade-copier/requirements.txt",
+      "source": "gold_trade_copier_requirements",
+      "target": "flask_library"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "gold-trade-copier/requirements.txt",
+      "source": "gold_trade_copier_requirements",
+      "target": "waitress_library"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Telegram Notifier/SETUP_GUIDE.md",
+      "source": "telegram_notifier_setup_guide",
+      "target": "telegram_notifier_ea"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Telegram Notifier/SETUP_GUIDE.md",
+      "source": "telegram_notifier_ea",
+      "target": "telegram_api"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "gold_trade_copier_infrastructure",
+      "label": "Gold Trade Copier Infrastructure",
+      "nodes": [
+        "gold_trade_copier_relay_server",
+        "gold_trade_copier_master_ea",
+        "gold_trade_copier_slave_ea"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "gold-trade-copier/SETUP_GUIDE.md"
+    },
+    {
+      "id": "mt5_telegram_integration",
+      "label": "MT5 Telegram Notification System",
+      "nodes": [
+        "telegram_notifier_ea",
+        "telegram_api"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Telegram Notifier/SETUP_GUIDE.md"
+    }
+  ]
+}
