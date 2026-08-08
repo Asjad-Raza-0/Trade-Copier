@@ -1,6 +1,7 @@
 # Dev & AI Agent Workspace Files (Not needed for Cloudflare Pages / VPS deployment)
 Resources/
 graphify-out/
+.wrangler/
 
 # Python Cache & Environment
 __pycache__/
