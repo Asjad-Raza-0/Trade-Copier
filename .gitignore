@@ -1,0 +1,23 @@
+# Dev & AI Agent Workspace Files (Not needed for Cloudflare Pages / VPS deployment)
+Resources/
+graphify-out/
+
+# Python Cache & Environment
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+ENV/
+env/
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs & Temporary files
+*.log
+scratch/

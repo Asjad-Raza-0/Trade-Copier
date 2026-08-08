@@ -11,7 +11,7 @@ export async function onRequest(context) {
   const queryString = url.search;
 
   // Master VPS Endpoint configuration (can be overridden via Cloudflare Environment Variable RELAY_SERVER_URL)
-  const targetBase = env.RELAY_SERVER_URL || "http://18.169.240.111:8765";
+  const targetBase = env.RELAY_SERVER_URL || "http://3.11.8.205:8765";
   
   // Handle /api/dashboard-summary, /api/command, /slaves, /health, /events etc.
   let targetUrl = `${targetBase}/api${subPath}${queryString}`;

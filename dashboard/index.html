@@ -3,29 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gold Trade Copier — Enterprise Master & Slave Command Center</title>
-  <!-- Google Fonts: Inter & Outfit -->
+  <title>Gold Trade Copier — Anthropic Editorial Command Center</title>
+  <!-- Google Fonts: Cormorant Garamond (Serif Display), Inter (Humanist Sans), JetBrains Mono (Code) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <!-- Lucide Icons CDN -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Supabase JS Client for Realtime & PostgreSQL Cloud Data -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
   <style>
+    /* ==========================================================================
+       Claude / Anthropic Design System Tokens (Resources/DESIGN.md)
+       ========================================================================== */
     :root {
-      --bg-primary: #0a0d14;
-      --bg-card: rgba(18, 24, 38, 0.75);
-      --bg-card-hover: rgba(26, 35, 56, 0.85);
-      --border-color: rgba(255, 215, 0, 0.12);
-      --border-hover: rgba(255, 215, 0, 0.3);
-      --gold-primary: #ffd700;
-      --gold-glow: rgba(255, 215, 0, 0.25);
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
-      --accent-green: #10b981;
-      --accent-red: #ef4444;
-      --accent-blue: #3b82f6;
-      --accent-purple: #8b5cf6;
-      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      /* Colors */
+      --colors-primary: #cc785c;             /* Signature Anthropic Warm Coral */
+      --colors-primary-active: #a9583e;      /* Pressed/hover coral */
+      --colors-primary-disabled: #e6dfd8;    /* Desaturated cream disabled */
+      --colors-ink: #141413;                 /* Headlines & primary text */
+      --colors-body: #3d3d3a;                /* Paragraph text */
+      --colors-body-strong: #252523;         /* Emphasized text */
+      --colors-muted: #6c6a64;               /* Sub-headings & labels */
+      --colors-muted-soft: #8e8b82;          /* Captions */
+      --colors-hairline: #e6dfd8;            /* 1px border tone on cream */
+      --colors-hairline-soft: #ebe6df;       /* Soft divider */
+      --colors-canvas: #faf9f5;              /* Default Warm Cream Canvas */
+      --colors-surface-soft: #f5f0e8;        /* Section dividers */
+      --colors-surface-card: #efe9de;        /* Feature Cards (one step darker) */
+      --colors-surface-cream-strong: #e8e0d2;
+      --colors-surface-dark: #181715;        /* Dark Navy Code/Product Mockup Surface */
+      --colors-surface-dark-elevated: #252320;/* Elevated dark card */
+      --colors-surface-dark-soft: #1f1e1b;   /* Code block inner background */
+      --colors-on-primary: #ffffff;
+      --colors-on-dark: #faf9f5;
+      --colors-on-dark-soft: #a09d96;
+      --colors-accent-teal: #5db8a6;
+      --colors-accent-amber: #e8a55a;
+      --colors-success: #5db872;
+      --colors-warning: #d4a017;
+      --colors-error: #c64545;
+
+      /* Typography */
+      --font-display: 'Cormorant Garamond', 'Tiempos Headline', Garamond, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-code: 'JetBrains Mono', ui-monospace, monospace;
+
+      /* Shapes & Spacing */
+      --rounded-xs: 4px;
+      --rounded-sm: 6px;
+      --rounded-md: 8px;
+      --rounded-lg: 12px;
+      --rounded-xl: 16px;
+      --rounded-pill: 9999px;
+      --spacing-section: 96px;
     }
 
     * {
@@ -35,327 +67,316 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-primary);
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(255, 215, 0, 0.05) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
-      color: var(--text-main);
+      font-family: var(--font-body);
+      background-color: var(--colors-canvas);
+      color: var(--colors-ink);
       min-height: 100vh;
-      padding: 20px;
+      padding: 32px 24px;
+      line-height: 1.55;
     }
 
-    header {
+    /* Top Navigation (Claude Style) */
+    .top-nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 24px;
-      background: var(--bg-card);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      margin-bottom: 24px;
-      box-shadow: var(--shadow-glass);
+      padding: 16px 28px;
+      background: var(--colors-canvas);
+      border: 1px solid var(--colors-hairline);
+      border-radius: var(--rounded-lg);
+      margin-bottom: 32px;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-icon {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(135deg, #ffd700, #ff8c00);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #000;
-      font-weight: 800;
-      box-shadow: 0 0 15px var(--gold-glow);
-    }
-
-    .brand-text h1 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.35rem;
-      font-weight: 700;
-      background: linear-gradient(90deg, #fff, #ffd700);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .brand-text p {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-    }
-
-    .header-actions {
+    .brand-group {
       display: flex;
       align-items: center;
       gap: 14px;
     }
 
+    /* Anthropic 4-Spoke Radial Spike Glyph */
+    .brand-spike {
+      width: 32px;
+      height: 32px;
+      background: var(--colors-ink);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z'/%3E%3C/svg%3E") no-repeat center;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z'/%3E%3C/svg%3E") no-repeat center;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+      color: var(--colors-ink);
+    }
+
+    .brand-tag {
+      font-size: 13px;
+      color: var(--colors-muted);
+      margin-left: 8px;
+      border-left: 1px solid var(--colors-hairline);
+      padding-left: 12px;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Buttons */
     .btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       padding: 10px 18px;
-      border-radius: 10px;
-      font-size: 0.88rem;
-      font-weight: 600;
+      height: 40px;
+      border-radius: var(--rounded-md);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
       cursor: pointer;
       border: none;
-      transition: all 0.2s ease;
+      transition: background-color 0.15s ease, transform 0.1s ease;
     }
 
-    .btn-primary {
-      background: linear-gradient(135deg, #ffd700, #f59e0b);
-      color: #000;
-      box-shadow: 0 4px 14px var(--gold-glow);
+    .btn-coral {
+      background-color: var(--colors-primary);
+      color: var(--colors-on-primary);
     }
 
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px var(--gold-glow);
-    }
-
-    .btn-danger {
-      background: linear-gradient(135deg, #ef4444, #b91c1c);
-      color: #fff;
-      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
-    }
-
-    .btn-danger:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    .btn-coral:hover {
+      background-color: var(--colors-primary-active);
     }
 
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-main);
-      border: 1px solid var(--border-color);
+      background-color: var(--colors-canvas);
+      color: var(--colors-ink);
+      border: 1px solid var(--colors-hairline);
     }
 
     .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.15);
+      background-color: var(--colors-surface-card);
+    }
+
+    .btn-dark {
+      background-color: var(--colors-surface-dark-elevated);
+      color: var(--colors-on-dark);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-dark:hover {
+      background-color: #2e2b27;
     }
 
     .btn-sm {
+      height: 32px;
       padding: 6px 12px;
-      font-size: 0.78rem;
-      border-radius: 8px;
+      font-size: 13px;
     }
 
-    /* Stats Grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
+    /* Editorial Hero Section */
+    .hero-section {
+      margin-bottom: 40px;
+    }
+
+    .hero-headline {
+      font-family: var(--font-display);
+      font-size: 48px;
+      font-weight: 400;
+      line-height: 1.1;
+      letter-spacing: -1.2px;
+      color: var(--colors-ink);
+      margin-bottom: 12px;
+    }
+
+    .hero-subtitle {
+      font-size: 16px;
+      color: var(--colors-body);
+      max-width: 720px;
       margin-bottom: 24px;
     }
 
+    /* Stats Grid Cards */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
     .stat-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border-color);
-      border-radius: 14px;
-      padding: 18px 20px;
-      position: relative;
-      overflow: hidden;
+      background-color: var(--colors-surface-card);
+      border: 1px solid var(--colors-hairline);
+      border-radius: var(--rounded-lg);
+      padding: 24px;
     }
 
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
-      background: var(--gold-primary);
-    }
-
-    .stat-title {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-bottom: 6px;
+    .stat-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--colors-muted);
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      margin-bottom: 8px;
     }
 
-    .stat-value {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.7rem;
-      font-weight: 700;
-      color: var(--text-main);
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 500;
+      color: var(--colors-ink);
+      line-height: 1;
     }
 
-    .stat-sub {
-      font-size: 0.75rem;
-      color: var(--accent-green);
-      margin-top: 4px;
+    .stat-meta {
+      font-size: 13px;
+      color: var(--colors-muted);
+      margin-top: 8px;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
     }
 
-    /* Layout Columns */
-    .dashboard-layout {
+    /* Main Content Layout */
+    .layout-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 24px;
     }
 
     @media (max-width: 1024px) {
-      .dashboard-layout {
+      .layout-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    .panel {
-      background: var(--bg-card);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 20px;
+    /* Cream Feature Card Container */
+    .card-cream {
+      background-color: var(--colors-surface-card);
+      border: 1px solid var(--colors-hairline);
+      border-radius: var(--rounded-lg);
+      padding: 32px;
       margin-bottom: 24px;
-      box-shadow: var(--shadow-glass);
     }
 
-    .panel-header {
+    /* Dark Navy Product Surface Container (Signature Claude Chrome) */
+    .card-dark-navy {
+      background-color: var(--colors-surface-dark);
+      color: var(--colors-on-dark);
+      border-radius: var(--rounded-lg);
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-title-serif {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: -0.4px;
+      margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    .panel-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .card-title-dark {
+      color: var(--colors-on-dark);
     }
 
-    /* Tables */
-    .table-responsive {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 0.88rem;
-    }
-
-    th {
-      color: var(--text-muted);
-      font-weight: 500;
-      padding: 12px 14px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 0.78rem;
-      text-transform: uppercase;
-    }
-
-    td {
-      padding: 14px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      color: var(--text-main);
-    }
-
-    tr:hover {
-      background: rgba(255, 255, 255, 0.03);
-    }
-
-    /* Badges */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-
-    .badge-online {
-      background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-
-    .badge-stale {
-      background: rgba(245, 158, 11, 0.15);
-      color: #fbbf24;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-    }
-
-    .badge-offline {
-      background: rgba(239, 68, 68, 0.15);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-
-    .badge-buy {
-      background: rgba(16, 185, 129, 0.2);
-      color: #34d399;
-    }
-
-    .badge-sell {
-      background: rgba(239, 68, 68, 0.2);
-      color: #f87171;
-    }
-
-    /* Slave Cards Grid */
-    .slave-cards {
+    /* Connected Slaves Grid */
+    .slaves-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 16px;
     }
 
-    .slave-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
+    .slave-tile {
+      background-color: var(--colors-canvas);
+      border: 1px solid var(--colors-hairline);
+      border-radius: var(--rounded-md);
       padding: 16px;
-      transition: all 0.2s ease;
     }
 
-    .slave-card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-2px);
+    .slave-tile-title {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--colors-ink);
+      margin-bottom: 8px;
     }
 
-    .slave-card-header {
+    .slave-tile-row {
+      font-size: 13px;
+      color: var(--colors-body);
+      margin-bottom: 4px;
       display: flex;
       justify-content: space-between;
+    }
+
+    /* Table Styles in Dark Navy Card */
+    .dark-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    .dark-table th {
+      color: var(--colors-on-dark-soft);
+      font-weight: 500;
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .dark-table td {
+      padding: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--colors-on-dark);
+    }
+
+    /* Badges & Pills */
+    .badge-pill {
+      display: inline-flex;
       align-items: center;
-      margin-bottom: 12px;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: var(--rounded-pill);
+      font-size: 12px;
+      font-weight: 500;
     }
 
-    .slave-card-title {
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: var(--gold-primary);
+    .badge-coral {
+      background-color: var(--colors-primary);
+      color: var(--colors-on-primary);
     }
 
-    .slave-meta {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-      display: flex;
-      justify-content: space-between;
+    .badge-teal {
+      background-color: rgba(93, 184, 166, 0.2);
+      color: var(--colors-accent-teal);
+      border: 1px solid rgba(93, 184, 166, 0.3);
     }
 
-    .slave-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 14px;
+    .badge-amber {
+      background-color: rgba(232, 165, 90, 0.2);
+      color: var(--colors-accent-amber);
+      border: 1px solid rgba(232, 165, 90, 0.3);
+    }
+
+    /* Monospace Terminal Window */
+    .code-terminal {
+      font-family: var(--font-code);
+      font-size: 13px;
+      background-color: var(--colors-surface-dark-soft);
+      border-radius: var(--rounded-md);
+      padding: 16px;
+      max-height: 280px;
+      overflow-y: auto;
+      color: #d1d5db;
     }
 
     /* Modal Overlay */
@@ -365,15 +386,15 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
+      background: rgba(20, 20, 19, 0.7);
+      backdrop-filter: blur(4px);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 999;
       opacity: 0;
       pointer-events: none;
-      transition: all 0.2s ease;
+      transition: opacity 0.2s ease;
     }
 
     .modal-overlay.active {
@@ -381,251 +402,302 @@
       pointer-events: auto;
     }
 
-    .modal {
-      background: #121826;
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 24px;
-      max-width: 480px;
+    .modal-card {
+      background-color: var(--colors-canvas);
+      border: 1px solid var(--colors-hairline);
+      border-radius: var(--rounded-lg);
+      padding: 32px;
+      max-width: 520px;
       width: 90%;
-      box-shadow: var(--shadow-glass);
     }
 
-    .modal-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: var(--gold-primary);
-    }
-
-    .input-group {
+    .input-field {
       margin-bottom: 16px;
     }
 
-    .input-group label {
+    .input-field label {
       display: block;
-      font-size: 0.8rem;
-      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--colors-body);
       margin-bottom: 6px;
     }
 
-    .input-group input {
+    .input-field input {
       width: 100%;
       padding: 10px 14px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 8px;
-      color: var(--text-main);
-      font-size: 0.9rem;
+      height: 40px;
+      background-color: var(--colors-canvas);
+      border: 1px solid var(--colors-hairline);
+      border-radius: var(--rounded-md);
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--colors-ink);
     }
 
-    .input-group input:focus {
+    .input-field input:focus {
       outline: none;
-      border-color: var(--gold-primary);
-    }
-
-    .sync-indicator {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent-green);
-      box-shadow: 0 0 8px var(--accent-green);
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 0.4; }
-      50% { opacity: 1; }
-      100% { opacity: 0.4; }
+      border-color: var(--colors-primary);
+      box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.15);
     }
   </style>
 </head>
 <body>
 
   <!-- Top Navigation Header -->
-  <header>
-    <div class="brand">
-      <div class="brand-icon">
-        <i data-lucide="shield-check"></i>
-      </div>
-      <div class="brand-text">
-        <h1>Gold Trade Copier</h1>
-        <p>Enterprise Master & Multi-Slave VPS Command Center</p>
-      </div>
+  <nav class="top-nav">
+    <div class="brand-group">
+      <div class="brand-spike"></div>
+      <span class="brand-title">Gold Trade Copier</span>
+      <span class="brand-tag">Enterprise Command Center</span>
     </div>
-    <div class="header-actions">
-      <span class="badge badge-online">
-        <span class="sync-indicator"></span> Live Sync <span id="last-sync-time">Just now</span>
+    <div class="nav-controls">
+      <span class="badge-pill badge-teal" id="status-badge">
+        <i data-lucide="activity" style="width: 14px;"></i> Live Master Sync
       </span>
-      <button class="btn btn-secondary btn-sm" onclick="openConfigModal()">
-        <i data-lucide="settings"></i> API Config
+      <span class="badge-pill badge-amber" id="supabase-status-badge">
+        <i data-lucide="database" style="width: 14px;"></i> Supabase Active
+      </span>
+      <button class="btn btn-secondary btn-sm" onclick="openModal('config-modal')">
+        <i data-lucide="settings" style="width: 14px;"></i> Credentials
       </button>
-      <button class="btn btn-danger" onclick="triggerEmergencyKill()">
-        <i data-lucide="zap"></i> Emergency Kill Switch
+      <button class="btn btn-coral" onclick="triggerEmergencyKill()">
+        <i data-lucide="zap" style="width: 16px;"></i> Emergency Stop
       </button>
     </div>
+  </nav>
+
+  <!-- Editorial Hero Section -->
+  <header class="hero-section">
+    <h1 class="hero-headline">Master & Multi-Slave VPS Overview</h1>
+    <p class="hero-subtitle">
+      Real-time trade replication, remote VPS controls, and Cloud PostgreSQL analytics.
+      Monitor connected slave terminals, adjust lot multipliers, or close trades instantly.
+    </p>
   </header>
 
-  <!-- Top Metrics Bar -->
-  <div class="stats-grid">
+  <!-- Key Metrics Row -->
+  <div class="stats-row">
     <div class="stat-card">
-      <div class="stat-title">Master VPS Status</div>
-      <div class="stat-value" id="stat-master-status" style="color: var(--accent-green);">ONLINE</div>
-      <div class="stat-sub"><i data-lucide="server"></i> IP: <span id="stat-master-ip">18.169.240.111</span></div>
+      <div class="stat-label">Master VPS Status</div>
+      <div class="stat-num" id="stat-master-status" style="color: var(--colors-success);">ONLINE</div>
+      <div class="stat-meta"><i data-lucide="server" style="width: 14px;"></i> Master IP: <span id="stat-master-ip">3.11.8.205</span></div>
     </div>
     <div class="stat-card">
-      <div class="stat-title">Active Slaves VPS</div>
-      <div class="stat-value" id="stat-active-slaves">0</div>
-      <div class="stat-sub"><i data-lucide="cpu"></i> Total Registered: <span id="stat-total-slaves">0</span></div>
+      <div class="stat-label">Online Slave Terminals</div>
+      <div class="stat-num" id="stat-online-slaves">0</div>
+      <div class="stat-meta"><i data-lucide="cpu" style="width: 14px;"></i> Registered: <span id="stat-total-slaves">0</span></div>
     </div>
     <div class="stat-card">
-      <div class="stat-title">Live Active Trades</div>
-      <div class="stat-value" id="stat-active-trades" style="color: var(--gold-primary);">0</div>
-      <div class="stat-sub"><i data-lucide="layers"></i> Tracking Master Tickets</div>
+      <div class="stat-label">Active Open Trades</div>
+      <div class="stat-num" id="stat-active-trades" style="color: var(--colors-primary);">0</div>
+      <div class="stat-meta"><i data-lucide="layers" style="width: 14px;"></i> Tracking Master Tickets</div>
     </div>
     <div class="stat-card">
-      <div class="stat-title">24h Trade Events</div>
-      <div class="stat-value" id="stat-total-events">0</div>
-      <div class="stat-sub"><i data-lucide="activity"></i> Max Event ID: #<span id="stat-max-id">0</span></div>
+      <div class="stat-label">Cloud Persistence</div>
+      <div class="stat-num" id="stat-supabase-connected">Supabase</div>
+      <div class="stat-meta"><i data-lucide="database" style="width: 14px;"></i> Realtime WebSockets</div>
     </div>
   </div>
 
-  <!-- Main Dashboard Grid -->
-  <div class="dashboard-layout">
-    
-    <!-- Left Column: Active Trades & Connected Slaves -->
+  <!-- Main Layout Grid -->
+  <div class="layout-grid">
+
+    <!-- Left Column -->
     <div>
       
-      <!-- Panel 1: Connected Slave VPS Command Cards -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title"><i data-lucide="network"></i> Connected Slave VPS Terminals</div>
-          <button class="btn btn-secondary btn-sm" onclick="fetchDashboardData()"><i data-lucide="refresh-cw"></i> Refresh</button>
+      <!-- Connected Slaves Matrix (Cream Card) -->
+      <section class="card-cream">
+        <div class="card-title-serif">
+          <span>Connected Slave VPS Terminals</span>
+          <button class="btn btn-secondary btn-sm" onclick="fetchDashboardData()">
+            <i data-lucide="refresh-cw" style="width: 14px;"></i> Refresh
+          </button>
         </div>
-        <div class="slave-cards" id="slave-cards-container">
-          <div style="color: var(--text-muted); font-size: 0.88rem; padding: 12px;">Loading connected Slave VPS instances...</div>
+        <div class="slaves-grid" id="slaves-container">
+          <div style="color: var(--colors-muted); font-size: 14px;">Polling connected slave VPS instances...</div>
         </div>
-      </div>
+      </section>
 
-      <!-- Panel 2: Live Active Trades -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title"><i data-lucide="trending-up"></i> Master & Slave Open Positions</div>
+      <!-- Active Master & Slave Open Positions (Dark Navy Product Card) -->
+      <section class="card-dark-navy">
+        <div class="card-title-serif card-title-dark">
+          <span>Active Master Open Positions</span>
+          <span class="badge-pill badge-coral" id="open-count-badge">0 Open</span>
         </div>
-        <div class="table-responsive">
-          <table>
+        <div style="overflow-x: auto;">
+          <table class="dark-table">
             <thead>
               <tr>
                 <th>Master Ticket</th>
                 <th>Symbol</th>
                 <th>Side</th>
-                <th>Lot Size</th>
+                <th>Volume</th>
                 <th>Open Price</th>
                 <th>SL / TP</th>
-                <th>Trade Time</th>
+                <th>Time</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="trades-table-body">
+            <tbody id="trades-tbody">
               <tr>
-                <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">No open master positions currently active.</td>
+                <td colspan="8" style="text-align: center; color: var(--colors-on-dark-soft); padding: 24px;">
+                  No active open positions on Master terminal.
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
 
     </div>
 
-    <!-- Right Column: Command Queue & Recent Events -->
+    <!-- Right Column -->
     <div>
-      
-      <!-- Panel 3: Remote Commands Log -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title"><i data-lucide="terminal"></i> Command Queue</div>
-        </div>
-        <div id="commands-log" style="font-family: monospace; font-size: 0.78rem; color: var(--text-muted); max-height: 250px; overflow-y: auto;">
-          <div style="padding: 8px 0;">No pending commands queued.</div>
-        </div>
-      </div>
 
-      <!-- Panel 4: Live Trade Event Feed -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title"><i data-lucide="list"></i> Live Trade Events Stream</div>
+      <!-- Supabase Realtime Stream (Dark Code Card) -->
+      <section class="card-dark-navy">
+        <div class="card-title-serif card-title-dark" style="font-size: 22px;">
+          <span>Supabase Realtime Stream</span>
+          <i data-lucide="wifi" style="width: 18px; color: var(--colors-accent-teal);"></i>
         </div>
-        <div id="events-stream" style="font-size: 0.8rem; max-height: 380px; overflow-y: auto;">
-          <div style="color: var(--text-muted); padding: 12px;">Polling events...</div>
+        <div class="code-terminal" id="realtime-stream">
+          <div>[System] Initializing Supabase Realtime WebSockets...</div>
         </div>
-      </div>
+      </section>
+
+      <!-- Pending Remote Commands Queue (Cream Card) -->
+      <section class="card-cream">
+        <div class="card-title-serif" style="font-size: 22px;">
+          <span>Remote Commands Queue</span>
+        </div>
+        <div id="commands-container" style="font-size: 13px; color: var(--colors-body);">
+          <div style="color: var(--colors-muted);">No pending commands in queue.</div>
+        </div>
+      </section>
 
     </div>
+
   </div>
 
-  <!-- API Settings Modal -->
+  <!-- Credentials Modal -->
   <div class="modal-overlay" id="config-modal">
-    <div class="modal">
-      <div class="modal-title">API Connection Settings</div>
-      <div class="input-group">
-        <label>Relay Server Base URL</label>
-        <input type="text" id="cfg-server-url" value="/api" placeholder="http://18.169.240.111:8765 or /api">
+    <div class="modal-card">
+      <h3 style="font-family: var(--font-display); font-size: 26px; margin-bottom: 16px;">System Credentials</h3>
+      
+      <div class="input-field">
+        <label>Master VPS Relay URL</label>
+        <input type="text" id="cfg-relay-url" placeholder="http://3.11.8.205:8765 or /api">
       </div>
-      <div class="input-group">
-        <label>API Key (X-API-Key)</label>
-        <input type="password" id="cfg-api-key" value="ahgcjhbckjhsafkhkfuablhfkakkscknalkn7jhg3gd">
+      
+      <div class="input-field">
+        <label>Relay API Key (X-API-Key)</label>
+        <input type="password" id="cfg-relay-key">
       </div>
-      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-        <button class="btn btn-secondary btn-sm" onclick="closeConfigModal()">Cancel</button>
-        <button class="btn btn-primary btn-sm" onclick="saveConfigModal()">Save & Connect</button>
+
+      <div class="input-field">
+        <label>Supabase Project URL</label>
+        <input type="text" id="cfg-supabase-url" placeholder="https://your-project.supabase.co">
+      </div>
+
+      <div class="input-field">
+        <label>Supabase Anon Key</label>
+        <input type="password" id="cfg-supabase-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+        <button class="btn btn-secondary" onclick="closeModal('config-modal')">Cancel</button>
+        <button class="btn btn-coral" onclick="saveCredentials()">Save & Initialize</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Config state
-    let serverUrl = localStorage.getItem('RELAY_URL') || '/api';
-    let apiKey = localStorage.getItem('RELAY_KEY') || 'ahgcjhbckjhsafkhkfuablhfkakkscknalkn7jhg3gd';
+    // System Credentials State
+    let relayUrl = localStorage.getItem('RELAY_URL') || '/api';
+    let relayKey = localStorage.getItem('RELAY_KEY') || 'ahgcjhbckjhsafkhkfuablhfkakkscknalkn7jhg3gd';
+    let supabaseUrl = localStorage.getItem('SUPABASE_URL') || '';
+    let supabaseKey = localStorage.getItem('SUPABASE_KEY') || '';
+
+    let supabaseClient = null;
 
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
+      initSupabase();
       fetchDashboardData();
       setInterval(fetchDashboardData, 3000);
     });
 
-    function openConfigModal() {
-      document.getElementById('cfg-server-url').value = serverUrl;
-      document.getElementById('cfg-api-key').value = apiKey;
-      document.getElementById('config-modal').classList.add('active');
+    function openModal(id) {
+      document.getElementById('cfg-relay-url').value = relayUrl;
+      document.getElementById('cfg-relay-key').value = relayKey;
+      document.getElementById('cfg-supabase-url').value = supabaseUrl;
+      document.getElementById('cfg-supabase-key').value = supabaseKey;
+      document.getElementById(id).classList.add('active');
     }
 
-    function closeConfigModal() {
-      document.getElementById('config-modal').classList.remove('active');
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
     }
 
-    function saveConfigModal() {
-      serverUrl = document.getElementById('cfg-server-url').value.trim();
-      apiKey = document.getElementById('cfg-api-key').value.trim();
-      localStorage.setItem('RELAY_URL', serverUrl);
-      localStorage.setItem('RELAY_KEY', apiKey);
-      closeConfigModal();
+    function saveCredentials() {
+      relayUrl = document.getElementById('cfg-relay-url').value.trim();
+      relayKey = document.getElementById('cfg-relay-key').value.trim();
+      supabaseUrl = document.getElementById('cfg-supabase-url').value.trim();
+      supabaseKey = document.getElementById('cfg-supabase-key').value.trim();
+
+      localStorage.setItem('RELAY_URL', relayUrl);
+      localStorage.setItem('RELAY_KEY', relayKey);
+      localStorage.setItem('SUPABASE_URL', supabaseUrl);
+      localStorage.setItem('SUPABASE_KEY', supabaseKey);
+
+      closeModal('config-modal');
+      initSupabase();
       fetchDashboardData();
     }
 
-    async function apiRequest(endpoint, method = 'GET', body = null) {
-      let target = `${serverUrl}${endpoint}`;
+    function initSupabase() {
+      const streamBox = document.getElementById('realtime-stream');
+      if (supabaseUrl && supabaseKey && window.supabase) {
+        try {
+          supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+          document.getElementById('supabase-status-badge').innerText = 'Supabase Cloud Connected';
+
+          // Subscribe to Supabase Realtime Channels
+          supabaseClient
+            .channel('trade_events_channel')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'trade_events' }, payload => {
+              const ev = payload.new;
+              const logLine = document.createElement('div');
+              logLine.innerHTML = `<span style="color: var(--colors-primary);">[Realtime]</span> ${ev.type} ${ev.symbol} (${ev.side || ''}) ${ev.lot || ''} lots (Ticket #${ev.master_ticket})`;
+              streamBox.prepend(logLine);
+              fetchDashboardData();
+            })
+            .subscribe();
+
+          streamBox.innerHTML = `<div>[Supabase] Realtime WebSocket Channel Active</div>`;
+        } catch (e) {
+          console.error("Supabase Client Init Error:", e);
+          document.getElementById('supabase-status-badge').innerText = 'Supabase Init Failed';
+        }
+      } else {
+        document.getElementById('supabase-status-badge').innerText = 'Supabase Keys Missing';
+        streamBox.innerHTML = `<div>[Info] Set Supabase URL & Anon Key in Credentials menu to enable Cloud Persistence & WebSockets.</div>`;
+      }
+    }
+
+    async function apiFetch(endpoint, method = 'GET', body = null) {
+      const url = `${relayUrl}${endpoint}`;
       const headers = {
-        'X-API-Key': apiKey,
+        'X-API-Key': relayKey,
         'Content-Type': 'application/json'
       };
 
-      const options = { method, headers };
-      if (body) options.body = JSON.stringify(body);
+      const opts = { method, headers };
+      if (body) opts.body = JSON.stringify(body);
 
       try {
-        const res = await fetch(target, options);
+        const res = await fetch(url, opts);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return await res.json();
       } catch (err) {
@@ -635,65 +707,59 @@
     }
 
     async function fetchDashboardData() {
-      const data = await apiRequest('/dashboard-summary');
-      if (!data) {
+      const summary = await apiFetch('/dashboard-summary');
+      if (!summary) {
         document.getElementById('stat-master-status').innerText = 'OFFLINE';
-        document.getElementById('stat-master-status').style.color = 'var(--accent-red)';
+        document.getElementById('stat-master-status').style.color = 'var(--colors-error)';
         return;
       }
 
-      document.getElementById('last-sync-time').innerText = new Date().toLocaleTimeString();
-      document.getElementById('stat-master-status').innerText = data.server_status;
-      document.getElementById('stat-master-status').style.color = 'var(--accent-green)';
-      document.getElementById('stat-master-ip').innerText = data.master_vps_ip;
+      document.getElementById('stat-master-status').innerText = summary.server_status;
+      document.getElementById('stat-master-status').style.color = 'var(--colors-success)';
+      document.getElementById('stat-master-ip').innerText = summary.master_vps_ip;
 
-      document.getElementById('stat-active-slaves').innerText = data.slave_counts.online;
-      document.getElementById('stat-total-slaves').innerText = data.slave_counts.total;
-      document.getElementById('stat-active-trades').innerText = data.active_trades.length;
-      document.getElementById('stat-total-events').innerText = data.total_events;
-      document.getElementById('stat-max-id').innerText = data.max_event_id;
+      document.getElementById('stat-online-slaves').innerText = summary.slave_counts.online;
+      document.getElementById('stat-total-slaves').innerText = summary.slave_counts.total;
+      document.getElementById('stat-active-trades').innerText = summary.active_trades.length;
+      document.getElementById('open-count-badge').innerText = `${summary.active_trades.length} Open`;
 
-      renderSlaves(data.slaves);
-      renderTrades(data.active_trades);
-      renderEvents(data.recent_events);
-      renderCommands(data.pending_commands);
+      renderSlaves(summary.slaves);
+      renderTrades(summary.active_trades);
+      renderCommands(summary.pending_commands);
     }
 
     function renderSlaves(slaves) {
-      const container = document.getElementById('slave-cards-container');
+      const container = document.getElementById('slaves-container');
       if (!slaves || slaves.length === 0) {
-        container.innerHTML = `<div style="color: var(--text-muted); font-size: 0.88rem;">No Slave VPS terminals registered yet.</div>`;
+        container.innerHTML = `<div style="color: var(--colors-muted); font-size: 14px;">No Slave VPS terminals registered yet.</div>`;
         return;
       }
 
-      container.innerHTML = slaves.map(s => {
-        const badgeClass = s.status === 'ONLINE' ? 'badge-online' : (s.status === 'STALE' ? 'badge-stale' : 'badge-offline');
-        return `
-          <div class="slave-card">
-            <div class="slave-card-header">
-              <span class="slave-card-title">${s.slave_id}</span>
-              <span class="badge ${badgeClass}">${s.status}</span>
-            </div>
-            <div class="slave-meta"><span>IP:</span> <strong>${s.ip_address || 'Unknown'}</strong></div>
-            <div class="slave-meta"><span>Symbol:</span> <strong>${s.symbol || 'N/A'}</strong></div>
-            <div class="slave-meta"><span>Last Seen:</span> <strong>${s.last_seen_seconds_ago}s ago</strong></div>
-            <div class="slave-meta"><span>Account:</span> <strong>${s.account_info || 'MT5 Account'}</strong></div>
-            
-            <div class="slave-actions">
-              <button class="btn btn-secondary btn-sm" onclick="sendSlaveCommand('${s.slave_id}', 'PAUSE')">⏸️ Pause</button>
-              <button class="btn btn-secondary btn-sm" onclick="sendSlaveCommand('${s.slave_id}', 'RESUME')">▶️ Resume</button>
-              <button class="btn btn-danger btn-sm" onclick="sendSlaveCommand('${s.slave_id}', 'CLOSE_ALL')">🛑 Close All</button>
-            </div>
+      container.innerHTML = slaves.map(s => `
+        <div class="slave-tile">
+          <div class="slave-tile-title" style="display: flex; justify-content: space-between;">
+            <span>${s.slave_id}</span>
+            <span class="badge-pill ${s.status === 'ONLINE' ? 'badge-teal' : 'badge-amber'}">${s.status}</span>
           </div>
-        `;
-      }).join('');
+          <div class="slave-tile-row"><span>IP:</span> <strong>${s.ip_address || 'Unknown'}</strong></div>
+          <div class="slave-tile-row"><span>Symbol:</span> <strong>${s.symbol || 'N/A'}</strong></div>
+          <div class="slave-tile-row"><span>Account:</span> <strong>${s.account_info || 'MT5 Account'}</strong></div>
+          <div class="slave-tile-row"><span>Heartbeat:</span> <strong>${s.last_seen_seconds_ago}s ago</strong></div>
+          
+          <div style="display: flex; gap: 8px; margin-top: 12px;">
+            <button class="btn btn-secondary btn-sm" onclick="postCommand('${s.slave_id}', 'PAUSE')">⏸ Pause</button>
+            <button class="btn btn-secondary btn-sm" onclick="postCommand('${s.slave_id}', 'RESUME')">▶ Resume</button>
+            <button class="btn btn-coral btn-sm" onclick="postCommand('${s.slave_id}', 'CLOSE_ALL')">Stop All</button>
+          </div>
+        </div>
+      `).join('');
       lucide.createIcons();
     }
 
     function renderTrades(trades) {
-      const tbody = document.getElementById('trades-table-body');
+      const tbody = document.getElementById('trades-tbody');
       if (!trades || trades.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">No open master positions currently active.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--colors-on-dark-soft); padding: 24px;">No active open positions on Master terminal.</td></tr>`;
         return;
       }
 
@@ -701,13 +767,13 @@
         <tr>
           <td><strong>#${t.master_ticket}</strong></td>
           <td>${t.symbol}</td>
-          <td><span class="badge ${t.side === 'BUY' ? 'badge-buy' : 'badge-sell'}">${t.side}</span></td>
+          <td><span class="badge-pill ${t.side === 'BUY' ? 'badge-teal' : 'badge-amber'}">${t.side}</span></td>
           <td>${t.lot} lots</td>
           <td>${t.price}</td>
           <td>SL: ${t.sl || 0} / TP: ${t.tp || 0}</td>
-          <td style="font-size: 0.78rem; color: var(--text-muted);">${t.trade_time || 'Live'}</td>
+          <td style="font-size: 12px; color: var(--colors-on-dark-soft);">${t.trade_time || 'Live'}</td>
           <td>
-            <button class="btn btn-danger btn-sm" onclick="sendSlaveCommand('ALL', 'CLOSE_TICKET', { master_ticket: ${t.master_ticket} })">
+            <button class="btn btn-dark btn-sm" onclick="postCommand('ALL', 'CLOSE_TICKET', { master_ticket: ${t.master_ticket} })">
               Close Ticket
             </button>
           </td>
@@ -715,42 +781,24 @@
       `).join('');
     }
 
-    function renderEvents(events) {
-      const container = document.getElementById('events-stream');
-      if (!events || events.length === 0) {
-        container.innerHTML = `<div style="color: var(--text-muted); padding: 12px;">No trade events logged.</div>`;
-        return;
-      }
-
-      container.innerHTML = events.slice(0, 15).map(e => `
-        <div style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <strong>#${e.id} [${e.type}]</strong> ${e.symbol} (${e.side || ''}) ${e.lot ? e.lot + ' lots' : ''}
-            <div style="font-size: 0.72rem; color: var(--text-muted);">Ticket #${e.master_ticket} @ ${e.price || 0}</div>
-          </div>
-          <span style="font-size: 0.72rem; color: var(--text-muted);">${e.trade_time || 'Just now'}</span>
-        </div>
-      `).join('');
-    }
-
     function renderCommands(cmds) {
-      const container = document.getElementById('commands-log');
+      const container = document.getElementById('commands-container');
       if (!cmds || cmds.length === 0) {
-        container.innerHTML = `<div style="padding: 8px 0;">No pending commands queued.</div>`;
+        container.innerHTML = `<div style="color: var(--colors-muted);">No pending commands in queue.</div>`;
         return;
       }
 
       container.innerHTML = cmds.map(c => `
-        <div style="padding: 6px 0; border-bottom: 1px dotted rgba(255,255,255,0.1);">
-          [Cmd #${c.id}] <strong>${c.action}</strong> -> ${c.target_slave_id} (${c.status})
+        <div style="padding: 8px 0; border-bottom: 1px solid var(--colors-hairline);">
+          [#${c.id}] <strong>${c.action}</strong> $\rightarrow$ ${c.target_slave_id} (${c.status})
         </div>
       `).join('');
     }
 
-    async function sendSlaveCommand(targetSlaveId, action, params = {}) {
+    async function postCommand(targetSlaveId, action, params = {}) {
       if (!confirm(`Are you sure you want to issue '${action}' to target: ${targetSlaveId}?`)) return;
 
-      const res = await apiRequest('/command', 'POST', {
+      const res = await apiFetch('/command', 'POST', {
         target_slave_id: targetSlaveId,
         action: action,
         params: params
@@ -760,14 +808,14 @@
         alert(`Command #${res.command_id} (${action}) queued successfully!`);
         fetchDashboardData();
       } else {
-        alert(`Failed to submit command: ${res ? res.error : 'Network Error'}`);
+        alert(`Failed to queue command: ${res ? res.error : 'Network Error'}`);
       }
     }
 
     async function triggerEmergencyKill() {
-      if (!confirm("🚨 WARNING: EMERGENCY KILL SWITCH ACTIVATED!\n\nThis will send an instant command to CLOSE ALL OPEN POSITIONS and PAUSE all connected Slave VPS instances!\n\nProceed?")) return;
+      if (!confirm("🚨 EMERGENCY KILL SWITCH!\n\nThis will instantly CLOSE ALL POSITIONS and PAUSE all connected Slave VPS instances!\n\nProceed?")) return;
 
-      await sendSlaveCommand('ALL', 'EMERGENCY_KILL');
+      await postCommand('ALL', 'EMERGENCY_KILL');
     }
   </script>
 </body>
