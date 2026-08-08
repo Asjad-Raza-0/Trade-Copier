@@ -761,7 +761,7 @@
       if (supabaseUrl && supabaseKey && window.supabase) {
         try {
           supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-          document.getElementById('supabase-status-badge').innerText = 'Supabase Cloud Connected';
+          document.getElementById('stat-supabase-connected').innerText = 'Connected';
 
           // Subscribe to Supabase Realtime Channels
           supabaseClient
@@ -778,10 +778,10 @@
           streamBox.innerHTML = `<div>[Supabase] Realtime WebSocket Channel Active</div>`;
         } catch (e) {
           console.error("Supabase Client Init Error:", e);
-          document.getElementById('supabase-status-badge').innerText = 'Supabase Init Failed';
+          document.getElementById('stat-supabase-connected').innerText = 'Init Failed';
         }
       } else {
-        document.getElementById('supabase-status-badge').innerText = 'Supabase Keys Missing';
+        document.getElementById('stat-supabase-connected').innerText = 'Not Configured';
         streamBox.innerHTML = `<div>[Info] Set Supabase URL & Anon Key in Credentials menu to enable Cloud Persistence & WebSockets.</div>`;
       }
     }
@@ -909,7 +909,7 @@
 
       container.innerHTML = cmds.map(c => `
         <div style="padding: 8px 0; border-bottom: 1px solid var(--colors-hairline);">
-          [#${c.id}] <strong>${c.action}</strong> $\rightarrow$ ${c.target_slave_id} (${c.status})
+          [#${c.id}] <strong>${c.action}</strong> &rarr; ${c.target_slave_id} (${c.status})
         </div>
       `).join('');
     }
@@ -937,7 +937,18 @@
       requireAdminAuth(async () => {
         if (!confirm("🚨 EMERGENCY KILL SWITCH!\n\nThis will instantly CLOSE ALL POSITIONS and PAUSE all connected Slave VPS instances!\n\nProceed?")) return;
 
-        await postCommand('ALL', 'EMERGENCY_KILL');
+        const res = await apiFetch('/command', 'POST', {
+          target_slave_id: 'ALL',
+          action: 'EMERGENCY_KILL',
+          params: {}
+        });
+
+        if (res && res.status === 'ok') {
+          alert(`Emergency Kill command #${res.command_id} issued to all slaves!`);
+          fetchDashboardData();
+        } else {
+          alert(`Failed to issue Emergency Kill: ${res ? res.error : 'Network Error'}`);
+        }
       });
     }
   </script>
