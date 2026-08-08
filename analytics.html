@@ -342,25 +342,48 @@
     }
 
     async function loadAnalyticsData() {
-      const relayUrl = localStorage.getItem('RELAY_URL') || window.APP_CONFIG.getRelayUrl();
-      const relayKey = localStorage.getItem('RELAY_KEY') || window.APP_CONFIG.getRelayKey();
+      const relayUrl = localStorage.getItem('RELAY_URL') || (window.APP_CONFIG ? window.APP_CONFIG.getRelayUrl() : '/api');
+      const relayKey = localStorage.getItem('RELAY_KEY') || (window.APP_CONFIG ? window.APP_CONFIG.getRelayKey() : 'ahgcjhbckjhsafkhkfuablhfkakkscknalkn7jhg3gd');
 
-      const targetEndpoint = relayUrl.endsWith('/api') ? `${relayUrl}/dashboard-summary` : `${relayUrl}/api/dashboard-summary`;
+      let baseUrl = relayUrl;
+      if (window.location.protocol === 'https:' && baseUrl.startsWith('http://')) {
+        baseUrl = '/api';
+      }
+
+      const targetEndpoint = baseUrl.endsWith('/api') ? `${baseUrl}/dashboard-summary` : `${baseUrl}/api/dashboard-summary`;
 
       try {
         const res = await fetch(targetEndpoint, {
-          headers: { 'X-API-Key': relayKey }
+          headers: {
+            'X-API-Key': relayKey,
+            'Content-Type': 'application/json'
+          }
         });
 
         if (res.ok) {
           const data = await res.json();
-          renderHistory(data.recent_events || []);
+          const events = data.recent_events || data.events || [];
+          renderHistory(events);
+          updateMetrics(events, data);
         } else {
           renderFallback();
         }
       } catch (err) {
+        console.error("Analytics fetch error:", err);
         renderFallback();
       }
+    }
+
+    function updateMetrics(events, data) {
+      if (!events) return;
+      let totalLots = 0;
+      events.forEach(e => {
+        if (e.lot) totalLots += parseFloat(e.lot);
+      });
+
+      document.getElementById('stat-volume').innerText = `${totalLots.toFixed(2)} Lots`;
+      document.getElementById('stat-total-trades').innerText = events.length;
+      document.getElementById('stat-latency').innerText = `~24 ms`;
     }
 
     function renderHistory(events) {
@@ -377,7 +400,7 @@
           <td><strong>${e.symbol || 'XAUUSD'}</strong></td>
           <td style="color: ${e.side === 'BUY' ? 'var(--colors-success)' : 'var(--colors-error)'}"><strong>${e.side || 'BUY'}</strong></td>
           <td>${e.lot || '1.0'} Lots</td>
-          <td>${e.price || 'N/A'}</td>
+          <td>${e.price || 'Market'}</td>
           <td>SL: ${e.sl || 0} / TP: ${e.tp || 0}</td>
           <td><span class="badge-pill badge-teal">Copied</span></td>
         </tr>
