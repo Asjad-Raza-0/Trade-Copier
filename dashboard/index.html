@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gold Trade Copier — Enterprise Master & Slave Command Center</title>
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --bg-primary: #0a0d14;
+      --bg-card: rgba(18, 24, 38, 0.75);
+      --bg-card-hover: rgba(26, 35, 56, 0.85);
+      --border-color: rgba(255, 215, 0, 0.12);
+      --border-hover: rgba(255, 215, 0, 0.3);
+      --gold-primary: #ffd700;
+      --gold-glow: rgba(255, 215, 0, 0.25);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-primary);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(255, 215, 0, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-glass);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #ffd700, #ff8c00);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-weight: 800;
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+
+    .brand-text h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #fff, #ffd700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-text p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ffd700, #f59e0b);
+      color: #000;
+      box-shadow: 0 4px 14px var(--gold-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px var(--gold-glow);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      border-radius: 8px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--gold-primary);
+    }
+
+    .stat-title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .stat-sub {
+      font-size: 0.75rem;
+      color: var(--accent-green);
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Layout Columns */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-glass);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .panel-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Tables */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 500;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-online {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-stale {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .badge-offline {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .badge-buy {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .badge-sell {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+
+    /* Slave Cards Grid */
+    .slave-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .slave-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .slave-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    .slave-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .slave-card-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--gold-primary);
+    }
+
+    .slave-meta {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .slave-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: #121826;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: var(--shadow-glass);
+    }
+
+    .modal-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--gold-primary);
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--gold-primary);
+    }
+
+    .sync-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { opacity: 0.4; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">
+        <i data-lucide="shield-check"></i>
+      </div>
+      <div class="brand-text">
+        <h1>Gold Trade Copier</h1>
+        <p>Enterprise Master & Multi-Slave VPS Command Center</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="badge badge-online">
+        <span class="sync-indicator"></span> Live Sync <span id="last-sync-time">Just now</span>
+      </span>
+      <button class="btn btn-secondary btn-sm" onclick="openConfigModal()">
+        <i data-lucide="settings"></i> API Config
+      </button>
+      <button class="btn btn-danger" onclick="triggerEmergencyKill()">
+        <i data-lucide="zap"></i> Emergency Kill Switch
+      </button>
+    </div>
+  </header>
+
+  <!-- Top Metrics Bar -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-title">Master VPS Status</div>
+      <div class="stat-value" id="stat-master-status" style="color: var(--accent-green);">ONLINE</div>
+      <div class="stat-sub"><i data-lucide="server"></i> IP: <span id="stat-master-ip">18.169.240.111</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Active Slaves VPS</div>
+      <div class="stat-value" id="stat-active-slaves">0</div>
+      <div class="stat-sub"><i data-lucide="cpu"></i> Total Registered: <span id="stat-total-slaves">0</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Live Active Trades</div>
+      <div class="stat-value" id="stat-active-trades" style="color: var(--gold-primary);">0</div>
+      <div class="stat-sub"><i data-lucide="layers"></i> Tracking Master Tickets</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">24h Trade Events</div>
+      <div class="stat-value" id="stat-total-events">0</div>
+      <div class="stat-sub"><i data-lucide="activity"></i> Max Event ID: #<span id="stat-max-id">0</span></div>
+    </div>
+  </div>
+
+  <!-- Main Dashboard Grid -->
+  <div class="dashboard-layout">
+    
+    <!-- Left Column: Active Trades & Connected Slaves -->
+    <div>
+      
+      <!-- Panel 1: Connected Slave VPS Command Cards -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i data-lucide="network"></i> Connected Slave VPS Terminals</div>
+          <button class="btn btn-secondary btn-sm" onclick="fetchDashboardData()"><i data-lucide="refresh-cw"></i> Refresh</button>
+        </div>
+        <div class="slave-cards" id="slave-cards-container">
+          <div style="color: var(--text-muted); font-size: 0.88rem; padding: 12px;">Loading connected Slave VPS instances...</div>
+        </div>
+      </div>
+
+      <!-- Panel 2: Live Active Trades -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i data-lucide="trending-up"></i> Master & Slave Open Positions</div>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Master Ticket</th>
+                <th>Symbol</th>
+                <th>Side</th>
+                <th>Lot Size</th>
+                <th>Open Price</th>
+                <th>SL / TP</th>
+                <th>Trade Time</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="trades-table-body">
+              <tr>
+                <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">No open master positions currently active.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Command Queue & Recent Events -->
+    <div>
+      
+      <!-- Panel 3: Remote Commands Log -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i data-lucide="terminal"></i> Command Queue</div>
+        </div>
+        <div id="commands-log" style="font-family: monospace; font-size: 0.78rem; color: var(--text-muted); max-height: 250px; overflow-y: auto;">
+          <div style="padding: 8px 0;">No pending commands queued.</div>
+        </div>
+      </div>
+
+      <!-- Panel 4: Live Trade Event Feed -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i data-lucide="list"></i> Live Trade Events Stream</div>
+        </div>
+        <div id="events-stream" style="font-size: 0.8rem; max-height: 380px; overflow-y: auto;">
+          <div style="color: var(--text-muted); padding: 12px;">Polling events...</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- API Settings Modal -->
+  <div class="modal-overlay" id="config-modal">
+    <div class="modal">
+      <div class="modal-title">API Connection Settings</div>
+      <div class="input-group">
+        <label>Relay Server Base URL</label>
+        <input type="text" id="cfg-server-url" value="/api" placeholder="http://18.169.240.111:8765 or /api">
+      </div>
+      <div class="input-group">
+        <label>API Key (X-API-Key)</label>
+        <input type="password" id="cfg-api-key" value="ahgcjhbckjhsafkhkfuablhfkakkscknalkn7jhg3gd">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+        <button class="btn btn-secondary btn-sm" onclick="closeConfigModal()">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="saveConfigModal()">Save & Connect</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Config state
+    let serverUrl = localStorage.getItem('RELAY_URL') || '/api';
+    let apiKey = localStorage.getItem('RELAY_KEY') || 'ahgcjhbckjhsafkhkfuablhfkakkscknalkn7jhg3gd';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      fetchDashboardData();
+      setInterval(fetchDashboardData, 3000);
+    });
+
+    function openConfigModal() {
+      document.getElementById('cfg-server-url').value = serverUrl;
+      document.getElementById('cfg-api-key').value = apiKey;
+      document.getElementById('config-modal').classList.add('active');
+    }
+
+    function closeConfigModal() {
+      document.getElementById('config-modal').classList.remove('active');
+    }
+
+    function saveConfigModal() {
+      serverUrl = document.getElementById('cfg-server-url').value.trim();
+      apiKey = document.getElementById('cfg-api-key').value.trim();
+      localStorage.setItem('RELAY_URL', serverUrl);
+      localStorage.setItem('RELAY_KEY', apiKey);
+      closeConfigModal();
+      fetchDashboardData();
+    }
+
+    async function apiRequest(endpoint, method = 'GET', body = null) {
+      let target = `${serverUrl}${endpoint}`;
+      const headers = {
+        'X-API-Key': apiKey,
+        'Content-Type': 'application/json'
+      };
+
+      const options = { method, headers };
+      if (body) options.body = JSON.stringify(body);
+
+      try {
+        const res = await fetch(target, options);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (err) {
+        console.error(`API Error (${endpoint}):`, err);
+        return null;
+      }
+    }
+
+    async function fetchDashboardData() {
+      const data = await apiRequest('/dashboard-summary');
+      if (!data) {
+        document.getElementById('stat-master-status').innerText = 'OFFLINE';
+        document.getElementById('stat-master-status').style.color = 'var(--accent-red)';
+        return;
+      }
+
+      document.getElementById('last-sync-time').innerText = new Date().toLocaleTimeString();
+      document.getElementById('stat-master-status').innerText = data.server_status;
+      document.getElementById('stat-master-status').style.color = 'var(--accent-green)';
+      document.getElementById('stat-master-ip').innerText = data.master_vps_ip;
+
+      document.getElementById('stat-active-slaves').innerText = data.slave_counts.online;
+      document.getElementById('stat-total-slaves').innerText = data.slave_counts.total;
+      document.getElementById('stat-active-trades').innerText = data.active_trades.length;
+      document.getElementById('stat-total-events').innerText = data.total_events;
+      document.getElementById('stat-max-id').innerText = data.max_event_id;
+
+      renderSlaves(data.slaves);
+      renderTrades(data.active_trades);
+      renderEvents(data.recent_events);
+      renderCommands(data.pending_commands);
+    }
+
+    function renderSlaves(slaves) {
+      const container = document.getElementById('slave-cards-container');
+      if (!slaves || slaves.length === 0) {
+        container.innerHTML = `<div style="color: var(--text-muted); font-size: 0.88rem;">No Slave VPS terminals registered yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = slaves.map(s => {
+        const badgeClass = s.status === 'ONLINE' ? 'badge-online' : (s.status === 'STALE' ? 'badge-stale' : 'badge-offline');
+        return `
+          <div class="slave-card">
+            <div class="slave-card-header">
+              <span class="slave-card-title">${s.slave_id}</span>
+              <span class="badge ${badgeClass}">${s.status}</span>
+            </div>
+            <div class="slave-meta"><span>IP:</span> <strong>${s.ip_address || 'Unknown'}</strong></div>
+            <div class="slave-meta"><span>Symbol:</span> <strong>${s.symbol || 'N/A'}</strong></div>
+            <div class="slave-meta"><span>Last Seen:</span> <strong>${s.last_seen_seconds_ago}s ago</strong></div>
+            <div class="slave-meta"><span>Account:</span> <strong>${s.account_info || 'MT5 Account'}</strong></div>
+            
+            <div class="slave-actions">
+              <button class="btn btn-secondary btn-sm" onclick="sendSlaveCommand('${s.slave_id}', 'PAUSE')">⏸️ Pause</button>
+              <button class="btn btn-secondary btn-sm" onclick="sendSlaveCommand('${s.slave_id}', 'RESUME')">▶️ Resume</button>
+              <button class="btn btn-danger btn-sm" onclick="sendSlaveCommand('${s.slave_id}', 'CLOSE_ALL')">🛑 Close All</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function renderTrades(trades) {
+      const tbody = document.getElementById('trades-table-body');
+      if (!trades || trades.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">No open master positions currently active.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = trades.map(t => `
+        <tr>
+          <td><strong>#${t.master_ticket}</strong></td>
+          <td>${t.symbol}</td>
+          <td><span class="badge ${t.side === 'BUY' ? 'badge-buy' : 'badge-sell'}">${t.side}</span></td>
+          <td>${t.lot} lots</td>
+          <td>${t.price}</td>
+          <td>SL: ${t.sl || 0} / TP: ${t.tp || 0}</td>
+          <td style="font-size: 0.78rem; color: var(--text-muted);">${t.trade_time || 'Live'}</td>
+          <td>
+            <button class="btn btn-danger btn-sm" onclick="sendSlaveCommand('ALL', 'CLOSE_TICKET', { master_ticket: ${t.master_ticket} })">
+              Close Ticket
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderEvents(events) {
+      const container = document.getElementById('events-stream');
+      if (!events || events.length === 0) {
+        container.innerHTML = `<div style="color: var(--text-muted); padding: 12px;">No trade events logged.</div>`;
+        return;
+      }
+
+      container.innerHTML = events.slice(0, 15).map(e => `
+        <div style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong>#${e.id} [${e.type}]</strong> ${e.symbol} (${e.side || ''}) ${e.lot ? e.lot + ' lots' : ''}
+            <div style="font-size: 0.72rem; color: var(--text-muted);">Ticket #${e.master_ticket} @ ${e.price || 0}</div>
+          </div>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">${e.trade_time || 'Just now'}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderCommands(cmds) {
+      const container = document.getElementById('commands-log');
+      if (!cmds || cmds.length === 0) {
+        container.innerHTML = `<div style="padding: 8px 0;">No pending commands queued.</div>`;
+        return;
+      }
+
+      container.innerHTML = cmds.map(c => `
+        <div style="padding: 6px 0; border-bottom: 1px dotted rgba(255,255,255,0.1);">
+          [Cmd #${c.id}] <strong>${c.action}</strong> -> ${c.target_slave_id} (${c.status})
+        </div>
+      `).join('');
+    }
+
+    async function sendSlaveCommand(targetSlaveId, action, params = {}) {
+      if (!confirm(`Are you sure you want to issue '${action}' to target: ${targetSlaveId}?`)) return;
+
+      const res = await apiRequest('/command', 'POST', {
+        target_slave_id: targetSlaveId,
+        action: action,
+        params: params
+      });
+
+      if (res && res.status === 'ok') {
+        alert(`Command #${res.command_id} (${action}) queued successfully!`);
+        fetchDashboardData();
+      } else {
+        alert(`Failed to submit command: ${res ? res.error : 'Network Error'}`);
+      }
+    }
+
+    async function triggerEmergencyKill() {
+      if (!confirm("🚨 WARNING: EMERGENCY KILL SWITCH ACTIVATED!\n\nThis will send an instant command to CLOSE ALL OPEN POSITIONS and PAUSE all connected Slave VPS instances!\n\nProceed?")) return;
+
+      await sendSlaveCommand('ALL', 'EMERGENCY_KILL');
+    }
+  </script>
+</body>
+</html>
