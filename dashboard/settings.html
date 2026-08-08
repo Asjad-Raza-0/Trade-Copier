@@ -404,35 +404,72 @@
       document.getElementById('vps-key-input').value = localStorage.getItem('RELAY_KEY') || window.APP_CONFIG.getRelayKey();
       document.getElementById('sb-url-input').value = localStorage.getItem('SUPABASE_URL') || window.APP_CONFIG.getSupabaseUrl();
       document.getElementById('sb-key-input').value = localStorage.getItem('SUPABASE_KEY') || window.APP_CONFIG.getSupabaseKey();
+      updateAuthBadge();
+    }
+
+    function updateAuthBadge() {
+      const badge = document.getElementById('vps-nav-status');
+      if (window.APP_CONFIG.isAdminAuthenticated()) {
+        badge.innerHTML = `<i data-lucide="unlock" style="width: 14px;"></i> Admin Authenticated`;
+        badge.className = 'badge-pill badge-teal';
+      } else {
+        badge.innerHTML = `<i data-lucide="lock" style="width: 14px;"></i> Guest Mode (Read Only)`;
+        badge.className = 'badge-pill badge-amber';
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function requireAdminAuth(actionCallback) {
+      if (window.APP_CONFIG.isAdminAuthenticated()) {
+        actionCallback();
+        return;
+      }
+      const pin = prompt('🔒 Admin Passcode Required:\nEnter 4-Digit Admin PIN to perform system changes (Default: 7890):');
+      if (pin === window.APP_CONFIG.getAdminPin()) {
+        window.APP_CONFIG.setAdminAuthenticated(true);
+        updateAuthBadge();
+        alert('✅ Passcode Accepted! Admin access unlocked.');
+        actionCallback();
+      } else if (pin !== null) {
+        alert('❌ Invalid Admin Passcode!');
+      }
     }
 
     function saveAllSettings() {
-      const url = document.getElementById('vps-url-input').value.trim();
-      const key = document.getElementById('vps-key-input').value.trim();
-      const sbUrl = document.getElementById('sb-url-input').value.trim();
-      const sbKey = document.getElementById('sb-key-input').value.trim();
+      requireAdminAuth(() => {
+        const url = document.getElementById('vps-url-input').value.trim();
+        const key = document.getElementById('vps-key-input').value.trim();
+        const sbUrl = document.getElementById('sb-url-input').value.trim();
+        const sbKey = document.getElementById('sb-key-input').value.trim();
 
-      localStorage.setItem('RELAY_URL', url);
-      localStorage.setItem('RELAY_KEY', key);
-      localStorage.setItem('SUPABASE_URL', sbUrl);
-      localStorage.setItem('SUPABASE_KEY', sbKey);
+        localStorage.setItem('RELAY_URL', url);
+        localStorage.setItem('RELAY_KEY', key);
+        localStorage.setItem('SUPABASE_URL', sbUrl);
+        localStorage.setItem('SUPABASE_KEY', sbKey);
 
-      logDiag(`[Success] Settings saved successfully! Master URL: ${url}`);
-      testConnection();
+        logDiag(`[Success] Settings saved successfully! Master URL: ${url}`);
+        testConnection();
+      });
     }
 
     async function testConnection() {
       const url = document.getElementById('vps-url-input').value.trim();
       const key = document.getElementById('vps-key-input').value.trim();
 
-      logDiag(`[Ping] Testing Master VPS connection to ${url}...`);
+      let fetchUrl = url;
+      if (window.location.protocol === 'https:' && url.startsWith('http://')) {
+        logDiag(`[Security Proxy] HTTPS site detected. Routing via Cloudflare Edge Proxy (/api) to prevent browser Mixed Content block...`);
+        fetchUrl = '/api';
+      }
+
+      logDiag(`[Ping] Testing Master VPS connection to ${fetchUrl}...`);
       const badge = document.getElementById('diag-badge');
       badge.innerText = 'Pinging...';
       badge.className = 'badge-pill badge-amber';
 
       const startTime = performance.now();
       try {
-        const targetEndpoint = url.endsWith('/api') ? `${url}/dashboard-summary` : `${url}/api/dashboard-summary`;
+        const targetEndpoint = fetchUrl.endsWith('/api') ? `${fetchUrl}/dashboard-summary` : `${fetchUrl}/api/dashboard-summary`;
         const res = await fetch(targetEndpoint, {
           headers: { 'X-API-Key': key }
         });
@@ -458,7 +495,7 @@
         badge.innerText = 'OFFLINE';
         badge.className = 'badge-pill badge-error';
         logDiag(`[Failure] Could not reach Master VPS (${err.message})`);
-        logDiag(`[Help] Check if relay_server.py is running on port 8765 and firewall port 8765 is open.`);
+        logDiag(`[Help] Cloudflare Edge Proxy attempted to reach Master VPS (${url}). Ensure relay_server.py is running on port 8765 and firewall port 8765 is allowed in AWS / VPS security rules.`);
       }
     }
 

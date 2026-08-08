@@ -786,8 +786,27 @@
       }
     }
 
+    function requireAdminAuth(actionCallback) {
+      if (window.APP_CONFIG.isAdminAuthenticated()) {
+        actionCallback();
+        return;
+      }
+      const pin = prompt('🔒 Admin Passcode Required:\nEnter 4-Digit Admin PIN to perform remote commands (Default: 7890):');
+      if (pin === window.APP_CONFIG.getAdminPin()) {
+        window.APP_CONFIG.setAdminAuthenticated(true);
+        alert('✅ Passcode Accepted! Admin control unlocked.');
+        actionCallback();
+      } else if (pin !== null) {
+        alert('❌ Invalid Admin Passcode!');
+      }
+    }
+
     async function apiFetch(endpoint, method = 'GET', body = null) {
-      const url = `${relayUrl}${endpoint}`;
+      let baseUrl = relayUrl;
+      if (window.location.protocol === 'https:' && baseUrl.startsWith('http://')) {
+        baseUrl = '/api';
+      }
+      const url = `${baseUrl}${endpoint}`;
       const headers = {
         'X-API-Key': relayKey,
         'Content-Type': 'application/json'
@@ -896,26 +915,30 @@
     }
 
     async function postCommand(targetSlaveId, action, params = {}) {
-      if (!confirm(`Are you sure you want to issue '${action}' to target: ${targetSlaveId}?`)) return;
+      requireAdminAuth(async () => {
+        if (!confirm(`Are you sure you want to issue '${action}' to target: ${targetSlaveId}?`)) return;
 
-      const res = await apiFetch('/command', 'POST', {
-        target_slave_id: targetSlaveId,
-        action: action,
-        params: params
+        const res = await apiFetch('/command', 'POST', {
+          target_slave_id: targetSlaveId,
+          action: action,
+          params: params
+        });
+
+        if (res && res.status === 'ok') {
+          alert(`Command #${res.command_id} (${action}) queued successfully!`);
+          fetchDashboardData();
+        } else {
+          alert(`Failed to queue command: ${res ? res.error : 'Network Error'}`);
+        }
       });
-
-      if (res && res.status === 'ok') {
-        alert(`Command #${res.command_id} (${action}) queued successfully!`);
-        fetchDashboardData();
-      } else {
-        alert(`Failed to queue command: ${res ? res.error : 'Network Error'}`);
-      }
     }
 
     async function triggerEmergencyKill() {
-      if (!confirm("🚨 EMERGENCY KILL SWITCH!\n\nThis will instantly CLOSE ALL POSITIONS and PAUSE all connected Slave VPS instances!\n\nProceed?")) return;
+      requireAdminAuth(async () => {
+        if (!confirm("🚨 EMERGENCY KILL SWITCH!\n\nThis will instantly CLOSE ALL POSITIONS and PAUSE all connected Slave VPS instances!\n\nProceed?")) return;
 
-      await postCommand('ALL', 'EMERGENCY_KILL');
+        await postCommand('ALL', 'EMERGENCY_KILL');
+      });
     }
   </script>
 </body>
