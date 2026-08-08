@@ -12,6 +12,8 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Supabase JS Client for Realtime & PostgreSQL Cloud Data -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Central Config -->
+  <script src="config.js"></script>
   
   <style>
     /* ==========================================================================
@@ -116,6 +118,32 @@
       margin-left: 8px;
       border-left: 1px solid var(--colors-hairline);
       padding-left: 12px;
+    }
+
+    /* Multi-Page Navigation Tabs */
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      background: var(--colors-surface-card);
+      padding: 4px;
+      border-radius: var(--rounded-md);
+    }
+
+    .nav-tab {
+      padding: 8px 16px;
+      border-radius: var(--rounded-md);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--colors-body);
+      text-decoration: none;
+      transition: background 0.15s ease;
+    }
+
+    .nav-tab.active {
+      background: var(--colors-canvas);
+      color: var(--colors-ink);
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
     .nav-controls {
@@ -449,14 +477,18 @@
     <div class="brand-group">
       <div class="brand-spike"></div>
       <span class="brand-title">Gold Trade Copier</span>
-      <span class="brand-tag">Enterprise Command Center</span>
     </div>
+
+    <!-- Multi-Page Navigation Tabs -->
+    <div class="nav-links">
+      <a href="index.html" class="nav-tab active">📊 Command Center</a>
+      <a href="settings.html" class="nav-tab">⚙️ VPS Settings</a>
+      <a href="analytics.html" class="nav-tab">📈 Trade Analytics</a>
+    </div>
+
     <div class="nav-controls">
       <span class="badge-pill badge-teal" id="status-badge">
         <i data-lucide="activity" style="width: 14px;"></i> Live Master Sync
-      </span>
-      <span class="badge-pill badge-amber" id="supabase-status-badge">
-        <i data-lucide="database" style="width: 14px;"></i> Supabase Active
       </span>
       <button class="btn btn-secondary btn-sm" onclick="openModal('config-modal')">
         <i data-lucide="settings" style="width: 14px;"></i> Credentials
@@ -614,10 +646,10 @@
 
   <script>
     // System Credentials State
-    let relayUrl = localStorage.getItem('RELAY_URL') || '/api';
-    let relayKey = localStorage.getItem('RELAY_KEY') || 'ahgcjhbckjhsafkhkfuablhfkakkscknalkn7jhg3gd';
-    let supabaseUrl = localStorage.getItem('SUPABASE_URL') || '';
-    let supabaseKey = localStorage.getItem('SUPABASE_KEY') || '';
+    let relayUrl = localStorage.getItem('RELAY_URL') || (window.APP_CONFIG ? window.APP_CONFIG.getRelayUrl() : '/api');
+    let relayKey = localStorage.getItem('RELAY_KEY') || (window.APP_CONFIG ? window.APP_CONFIG.getRelayKey() : 'ahgcjhbckjhsafkhkfuablhfkakkscknalkn7jhg3gd');
+    let supabaseUrl = localStorage.getItem('SUPABASE_URL') || (window.APP_CONFIG ? window.APP_CONFIG.getSupabaseUrl() : '');
+    let supabaseKey = localStorage.getItem('SUPABASE_KEY') || (window.APP_CONFIG ? window.APP_CONFIG.getSupabaseKey() : '');
 
     let supabaseClient = null;
 

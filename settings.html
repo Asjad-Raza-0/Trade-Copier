@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VPS & System Settings — Gold Trade Copier</title>
+  <!-- Google Fonts: Cormorant Garamond, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Central Config -->
+  <script src="config.js"></script>
+  
+  <style>
+    :root {
+      --colors-primary: #cc785c;
+      --colors-primary-active: #a9583e;
+      --colors-ink: #141413;
+      --colors-body: #3d3d3a;
+      --colors-muted: #6c6a64;
+      --colors-hairline: #e6dfd8;
+      --colors-canvas: #faf9f5;
+      --colors-surface-card: #efe9de;
+      --colors-surface-dark: #181715;
+      --colors-surface-dark-soft: #1f1e1b;
+      --colors-on-primary: #ffffff;
+      --colors-on-dark: #faf9f5;
+      --colors-on-dark-soft: #a09d96;
+      --colors-accent-teal: #5db8a6;
+      --colors-accent-amber: #e8a55a;
+      --colors-success: #5db872;
+      --colors-error: #c64545;
+
+      --font-display: 'Cormorant Garamond', serif;
+      --font-body: 'Inter', sans-serif;
+      --font-code: 'JetBrains Mono', monospace;
+
+      --rounded-md: 8px;
+      --rounded-lg: 12px;
+      --rounded-pill: 9999px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--colors-canvas);
+      color: var(--colors-ink);
+      min-height: 100vh;
+      padding: 32px 24px;
+      line-height: 1.55;
+    }
+
+    /* Top Navigation Header */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 28px;
+      background: var(--colors-canvas);
+      border: 1px solid var(--colors-hairline);
+      border-radius: var(--rounded-lg);
+      margin-bottom: 32px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-spike {
+      width: 32px;
+      height: 32px;
+      background: var(--colors-ink);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z'/%3E%3C/svg%3E") no-repeat center;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z'/%3E%3C/svg%3E") no-repeat center;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+      color: var(--colors-ink);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      background: var(--colors-surface-card);
+      padding: 4px;
+      border-radius: var(--rounded-md);
+    }
+
+    .nav-tab {
+      padding: 8px 16px;
+      border-radius: var(--rounded-md);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--colors-body);
+      text-decoration: none;
+      transition: background 0.15s ease;
+    }
+
+    .nav-tab.active {
+      background: var(--colors-canvas);
+      color: var(--colors-ink);
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      height: 40px;
+      border-radius: var(--rounded-md);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.15s ease;
+    }
+
+    .btn-coral {
+      background-color: var(--colors-primary);
+      color: var(--colors-on-primary);
+    }
+    .btn-coral:hover { background-color: var(--colors-primary-active); }
+
+    .btn-secondary {
+      background-color: var(--colors-canvas);
+      color: var(--colors-ink);
+      border: 1px solid var(--colors-hairline);
+    }
+    .btn-secondary:hover { background-color: var(--colors-surface-card); }
+
+    /* Layout Grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: var(--colors-surface-card);
+      border: 1px solid var(--colors-hairline);
+      border-radius: var(--rounded-lg);
+      padding: 28px;
+    }
+
+    .card-dark {
+      background: var(--colors-surface-dark);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--rounded-lg);
+      padding: 28px;
+      color: var(--colors-on-dark);
+    }
+
+    .card-header {
+      font-family: var(--font-display);
+      font-size: 24px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--colors-body);
+      margin-bottom: 8px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 14px;
+      height: 42px;
+      background-color: var(--colors-canvas);
+      border: 1px solid var(--colors-hairline);
+      border-radius: var(--rounded-md);
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--colors-ink);
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--colors-primary);
+      box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.15);
+    }
+
+    .terminal-box {
+      font-family: var(--font-code);
+      font-size: 13px;
+      background-color: var(--colors-surface-dark-soft);
+      border-radius: var(--rounded-md);
+      padding: 16px;
+      min-height: 180px;
+      max-height: 320px;
+      overflow-y: auto;
+      color: #d1d5db;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: var(--rounded-pill);
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .badge-teal { background: rgba(93, 184, 166, 0.2); color: var(--colors-accent-teal); border: 1px solid rgba(93, 184, 166, 0.3); }
+    .badge-amber { background: rgba(232, 165, 90, 0.2); color: var(--colors-accent-amber); border: 1px solid rgba(232, 165, 90, 0.3); }
+    .badge-error { background: rgba(198, 69, 69, 0.2); color: var(--colors-error); border: 1px solid rgba(198, 69, 69, 0.3); }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <nav class="top-nav">
+    <div class="brand-group">
+      <div class="brand-spike"></div>
+      <span class="brand-title">Gold Trade Copier</span>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-links">
+      <a href="index.html" class="nav-tab">📊 Command Center</a>
+      <a href="settings.html" class="nav-tab active">⚙️ VPS Settings</a>
+      <a href="analytics.html" class="nav-tab">📈 Trade Analytics</a>
+    </div>
+
+    <div>
+      <span class="badge-pill badge-teal" id="vps-nav-status">
+        <i data-lucide="server" style="width: 14px;"></i> VPS Configured
+      </span>
+    </div>
+  </nav>
+
+  <header style="margin-bottom: 32px;">
+    <h1 style="font-family: var(--font-display); font-size: 42px; font-weight: 400; margin-bottom: 8px;">VPS & System Credentials</h1>
+    <p style="color: var(--colors-body); font-size: 16px;">
+      Configure your Master VPS Relay endpoint, test live connection latency, manage Supabase Cloud PostgreSQL keys, and review MT5 terminal setup guides.
+    </p>
+  </header>
+
+  <!-- Form & Health Checker Grid -->
+  <div class="grid-2">
+    
+    <!-- Master VPS Settings Form -->
+    <div class="card">
+      <div class="card-header">
+        <span>Master VPS Connection</span>
+        <i data-lucide="server" style="color: var(--colors-primary);"></i>
+      </div>
+
+      <div class="form-group">
+        <label>Master VPS Relay URL</label>
+        <input type="text" id="vps-url-input" placeholder="http://3.11.8.205:8765 or /api">
+        <small style="display: block; margin-top: 4px; color: var(--colors-muted); font-size: 12px;">
+          Enter your Master VPS Public IP with port 8765 (e.g. <code>http://YOUR_VPS_IP:8765</code>) or <code>/api</code> for Cloudflare Proxy.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label>Relay API Key (X-API-Key)</label>
+        <input type="password" id="vps-key-input" placeholder="ahgcjhbckjhsafkhkfuablhfkakkscknalkn7jhg3gd">
+      </div>
+
+      <hr style="border: none; border-top: 1px solid var(--colors-hairline); margin: 24px 0;">
+
+      <div class="card-header" style="font-size: 20px;">
+        <span>Supabase Cloud Database</span>
+        <i data-lucide="database" style="color: var(--colors-accent-teal);"></i>
+      </div>
+
+      <div class="form-group">
+        <label>Supabase Project URL</label>
+        <input type="text" id="sb-url-input" placeholder="https://your-project.supabase.co">
+      </div>
+
+      <div class="form-group">
+        <label>Supabase Anon Public Key</label>
+        <input type="password" id="sb-key-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 24px;">
+        <button class="btn btn-coral" onclick="saveAllSettings()">
+          <i data-lucide="save" style="width: 16px;"></i> Save Settings
+        </button>
+        <button class="btn btn-secondary" onclick="testConnection()">
+          <i data-lucide="activity" style="width: 16px;"></i> Test VPS Connection
+        </button>
+      </div>
+    </div>
+
+    <!-- Live VPS Connection Health Diagnostic Card -->
+    <div class="card-dark">
+      <div class="card-header" style="color: var(--colors-on-dark);">
+        <span>Live Diagnostic Terminal</span>
+        <span class="badge-pill badge-teal" id="diag-badge">Ready</span>
+      </div>
+
+      <div class="terminal-box" id="diag-terminal">
+        <div>[System] Ready to perform connection diagnostics.</div>
+        <div>[Info] Click "Test VPS Connection" to ping your Master VPS Relay.</div>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <h4 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 12px;">Troubleshooting Checklist</h4>
+        <ul style="font-size: 13px; color: var(--colors-on-dark-soft); padding-left: 20px; line-height: 1.8;">
+          <li>Ensure <code>python relay_server.py</code> is running on your Master VPS.</li>
+          <li>Verify Port 8765 is allowed in AWS / VPS Security Group Inbound Rules.</li>
+          <li>Confirm the <code>X-API-Key</code> matches your Master Relay configuration.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      loadSettings();
+    });
+
+    function loadSettings() {
+      document.getElementById('vps-url-input').value = localStorage.getItem('RELAY_URL') || window.APP_CONFIG.getRelayUrl();
+      document.getElementById('vps-key-input').value = localStorage.getItem('RELAY_KEY') || window.APP_CONFIG.getRelayKey();
+      document.getElementById('sb-url-input').value = localStorage.getItem('SUPABASE_URL') || window.APP_CONFIG.getSupabaseUrl();
+      document.getElementById('sb-key-input').value = localStorage.getItem('SUPABASE_KEY') || window.APP_CONFIG.getSupabaseKey();
+    }
+
+    function saveAllSettings() {
+      const url = document.getElementById('vps-url-input').value.trim();
+      const key = document.getElementById('vps-key-input').value.trim();
+      const sbUrl = document.getElementById('sb-url-input').value.trim();
+      const sbKey = document.getElementById('sb-key-input').value.trim();
+
+      localStorage.setItem('RELAY_URL', url);
+      localStorage.setItem('RELAY_KEY', key);
+      localStorage.setItem('SUPABASE_URL', sbUrl);
+      localStorage.setItem('SUPABASE_KEY', sbKey);
+
+      logDiag(`[Success] Settings saved successfully! Master URL: ${url}`);
+      testConnection();
+    }
+
+    async function testConnection() {
+      const url = document.getElementById('vps-url-input').value.trim();
+      const key = document.getElementById('vps-key-input').value.trim();
+
+      logDiag(`[Ping] Testing Master VPS connection to ${url}...`);
+      const badge = document.getElementById('diag-badge');
+      badge.innerText = 'Pinging...';
+      badge.className = 'badge-pill badge-amber';
+
+      const startTime = performance.now();
+      try {
+        const targetEndpoint = url.endsWith('/api') ? `${url}/dashboard-summary` : `${url}/api/dashboard-summary`;
+        const res = await fetch(targetEndpoint, {
+          headers: { 'X-API-Key': key }
+        });
+
+        const latency = Math.round(performance.now() - startTime);
+
+        if (res.ok) {
+          const data = await res.json();
+          badge.innerText = 'ONLINE';
+          badge.className = 'badge-pill badge-teal';
+          logDiag(`[Success] Connected! HTTP 200 OK (${latency}ms latency)`);
+          logDiag(`[Master VPS] IP: ${data.master_vps_ip || 'Connected'}, Active Trades: ${data.active_trades ? data.active_trades.length : 0}`);
+        } else if (res.status === 401) {
+          badge.innerText = 'UNAUTHORIZED';
+          badge.className = 'badge-pill badge-error';
+          logDiag(`[Error] HTTP 401 Unauthorized — Incorrect Relay API Key!`);
+        } else {
+          badge.innerText = `HTTP ${res.status}`;
+          badge.className = 'badge-pill badge-error';
+          logDiag(`[Error] Master Relay returned status ${res.status}`);
+        }
+      } catch (err) {
+        badge.innerText = 'OFFLINE';
+        badge.className = 'badge-pill badge-error';
+        logDiag(`[Failure] Could not reach Master VPS (${err.message})`);
+        logDiag(`[Help] Check if relay_server.py is running on port 8765 and firewall port 8765 is open.`);
+      }
+    }
+
+    function logDiag(msg) {
+      const term = document.getElementById('diag-terminal');
+      const time = new Date().toLocaleTimeString();
+      const line = document.createElement('div');
+      line.innerText = `[${time}] ${msg}`;
+      term.prepend(line);
+    }
+  </script>
+</body>
+</html>
