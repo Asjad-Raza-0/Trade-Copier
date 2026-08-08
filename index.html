@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gold Trade Copier — Anthropic Editorial Command Center</title>
+  <!-- Google Fonts: Cormorant Garamond (Serif Display), Inter (Humanist Sans), JetBrains Mono (Code) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Supabase JS Client for Realtime & PostgreSQL Cloud Data -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <style>
+    /* ==========================================================================
+       Claude / Anthropic Design System Tokens (Resources/DESIGN.md)
+       ========================================================================== */
+    :root {
+      /* Colors */
+      --colors-primary: #cc785c;             /* Signature Anthropic Warm Coral */
+      --colors-primary-active: #a9583e;      /* Pressed/hover coral */
+      --colors-primary-disabled: #e6dfd8;    /* Desaturated cream disabled */
+      --colors-ink: #141413;                 /* Headlines & primary text */
+      --colors-body: #3d3d3a;                /* Paragraph text */
+      --colors-body-strong: #252523;         /* Emphasized text */
+      --colors-muted: #6c6a64;               /* Sub-headings & labels */
+      --colors-muted-soft: #8e8b82;          /* Captions */
+      --colors-hairline: #e6dfd8;            /* 1px border tone on cream */
+      --colors-hairline-soft: #ebe6df;       /* Soft divider */
+      --colors-canvas: #faf9f5;              /* Default Warm Cream Canvas */
+      --colors-surface-soft: #f5f0e8;        /* Section dividers */
+      --colors-surface-card: #efe9de;        /* Feature Cards (one step darker) */
+      --colors-surface-cream-strong: #e8e0d2;
+      --colors-surface-dark: #181715;        /* Dark Navy Code/Product Mockup Surface */
+      --colors-surface-dark-elevated: #252320;/* Elevated dark card */
+      --colors-surface-dark-soft: #1f1e1b;   /* Code block inner background */
+      --colors-on-primary: #ffffff;
+      --colors-on-dark: #faf9f5;
+      --colors-on-dark-soft: #a09d96;
+      --colors-accent-teal: #5db8a6;
+      --colors-accent-amber: #e8a55a;
+      --colors-success: #5db872;
+      --colors-warning: #d4a017;
+      --colors-error: #c64545;
+
+      /* Typography */
+      --font-display: 'Cormorant Garamond', 'Tiempos Headline', Garamond, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-code: 'JetBrains Mono', ui-monospace, monospace;
+
+      /* Shapes & Spacing */
+      --rounded-xs: 4px;
+      --rounded-sm: 6px;
+      --rounded-md: 8px;
+      --rounded-lg: 12px;
+      --rounded-xl: 16px;
+      --rounded-pill: 9999px;
+      --spacing-section: 96px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--colors-canvas);
+      color: var(--colors-ink);
+      min-height: 100vh;
+      padding: 32px 24px;
+      line-height: 1.55;
+    }
+
+    /* Top Navigation (Claude Style) */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 28px;
+      background: var(--colors-canvas);
+      border: 1px solid var(--colors-hairline);
+      border-radius: var(--rounded-lg);
+      margin-bottom: 32px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* Anthropic 4-Spoke Radial Spike Glyph */
+    .brand-spike {
+      width: 32px;
+      height: 32px;
+      background: var(--colors-ink);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z'/%3E%3C/svg%3E") no-repeat center;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z'/%3E%3C/svg%3E") no-repeat center;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+      color: var(--colors-ink);
+    }
+
+    .brand-tag {
+      font-size: 13px;
+      color: var(--colors-muted);
+      margin-left: 8px;
+      border-left: 1px solid var(--colors-hairline);
+      padding-left: 12px;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      height: 40px;
+      border-radius: var(--rounded-md);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.15s ease, transform 0.1s ease;
+    }
+
+    .btn-coral {
+      background-color: var(--colors-primary);
+      color: var(--colors-on-primary);
+    }
+
+    .btn-coral:hover {
+      background-color: var(--colors-primary-active);
+    }
+
+    .btn-secondary {
+      background-color: var(--colors-canvas);
+      color: var(--colors-ink);
+      border: 1px solid var(--colors-hairline);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--colors-surface-card);
+    }
+
+    .btn-dark {
+      background-color: var(--colors-surface-dark-elevated);
+      color: var(--colors-on-dark);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-dark:hover {
+      background-color: #2e2b27;
+    }
+
+    .btn-sm {
+      height: 32px;
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+
+    /* Editorial Hero Section */
+    .hero-section {
+      margin-bottom: 40px;
+    }
+
+    .hero-headline {
+      font-family: var(--font-display);
+      font-size: 48px;
+      font-weight: 400;
+      line-height: 1.1;
+      letter-spacing: -1.2px;
+      color: var(--colors-ink);
+      margin-bottom: 12px;
+    }
+
+    .hero-subtitle {
+      font-size: 16px;
+      color: var(--colors-body);
+      max-width: 720px;
+      margin-bottom: 24px;
+    }
+
+    /* Stats Grid Cards */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background-color: var(--colors-surface-card);
+      border: 1px solid var(--colors-hairline);
+      border-radius: var(--rounded-lg);
+      padding: 24px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--colors-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 500;
+      color: var(--colors-ink);
+      line-height: 1;
+    }
+
+    .stat-meta {
+      font-size: 13px;
+      color: var(--colors-muted);
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Main Content Layout */
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .layout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cream Feature Card Container */
+    .card-cream {
+      background-color: var(--colors-surface-card);
+      border: 1px solid var(--colors-hairline);
+      border-radius: var(--rounded-lg);
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    /* Dark Navy Product Surface Container (Signature Claude Chrome) */
+    .card-dark-navy {
+      background-color: var(--colors-surface-dark);
+      color: var(--colors-on-dark);
+      border-radius: var(--rounded-lg);
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-title-serif {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: -0.4px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title-dark {
+      color: var(--colors-on-dark);
+    }
+
+    /* Connected Slaves Grid */
+    .slaves-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .slave-tile {
+      background-color: var(--colors-canvas);
+      border: 1px solid var(--colors-hairline);
+      border-radius: var(--rounded-md);
+      padding: 16px;
+    }
+
+    .slave-tile-title {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--colors-ink);
+      margin-bottom: 8px;
+    }
+
+    .slave-tile-row {
+      font-size: 13px;
+      color: var(--colors-body);
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Table Styles in Dark Navy Card */
+    .dark-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    .dark-table th {
+      color: var(--colors-on-dark-soft);
+      font-weight: 500;
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .dark-table td {
+      padding: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--colors-on-dark);
+    }
+
+    /* Badges & Pills */
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: var(--rounded-pill);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .badge-coral {
+      background-color: var(--colors-primary);
+      color: var(--colors-on-primary);
+    }
+
+    .badge-teal {
+      background-color: rgba(93, 184, 166, 0.2);
+      color: var(--colors-accent-teal);
+      border: 1px solid rgba(93, 184, 166, 0.3);
+    }
+
+    .badge-amber {
+      background-color: rgba(232, 165, 90, 0.2);
+      color: var(--colors-accent-amber);
+      border: 1px solid rgba(232, 165, 90, 0.3);
+    }
+
+    /* Monospace Terminal Window */
+    .code-terminal {
+      font-family: var(--font-code);
+      font-size: 13px;
+      background-color: var(--colors-surface-dark-soft);
+      border-radius: var(--rounded-md);
+      padding: 16px;
+      max-height: 280px;
+      overflow-y: auto;
+      color: #d1d5db;
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(20, 20, 19, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background-color: var(--colors-canvas);
+      border: 1px solid var(--colors-hairline);
+      border-radius: var(--rounded-lg);
+      padding: 32px;
+      max-width: 520px;
+      width: 90%;
+    }
+
+    .input-field {
+      margin-bottom: 16px;
+    }
+
+    .input-field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--colors-body);
+      margin-bottom: 6px;
+    }
+
+    .input-field input {
+      width: 100%;
+      padding: 10px 14px;
+      height: 40px;
+      background-color: var(--colors-canvas);
+      border: 1px solid var(--colors-hairline);
+      border-radius: var(--rounded-md);
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--colors-ink);
+    }
+
+    .input-field input:focus {
+      outline: none;
+      border-color: var(--colors-primary);
+      box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.15);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <nav class="top-nav">
+    <div class="brand-group">
+      <div class="brand-spike"></div>
+      <span class="brand-title">Gold Trade Copier</span>
+      <span class="brand-tag">Enterprise Command Center</span>
+    </div>
+    <div class="nav-controls">
+      <span class="badge-pill badge-teal" id="status-badge">
+        <i data-lucide="activity" style="width: 14px;"></i> Live Master Sync
+      </span>
+      <span class="badge-pill badge-amber" id="supabase-status-badge">
+        <i data-lucide="database" style="width: 14px;"></i> Supabase Active
+      </span>
+      <button class="btn btn-secondary btn-sm" onclick="openModal('config-modal')">
+        <i data-lucide="settings" style="width: 14px;"></i> Credentials
+      </button>
+      <button class="btn btn-coral" onclick="triggerEmergencyKill()">
+        <i data-lucide="zap" style="width: 16px;"></i> Emergency Stop
+      </button>
+    </div>
+  </nav>
+
+  <!-- Editorial Hero Section -->
+  <header class="hero-section">
+    <h1 class="hero-headline">Master & Multi-Slave VPS Overview</h1>
+    <p class="hero-subtitle">
+      Real-time trade replication, remote VPS controls, and Cloud PostgreSQL analytics.
+      Monitor connected slave terminals, adjust lot multipliers, or close trades instantly.
+    </p>
+  </header>
+
+  <!-- Key Metrics Row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Master VPS Status</div>
+      <div class="stat-num" id="stat-master-status" style="color: var(--colors-success);">ONLINE</div>
+      <div class="stat-meta"><i data-lucide="server" style="width: 14px;"></i> Master IP: <span id="stat-master-ip">3.11.8.205</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Online Slave Terminals</div>
+      <div class="stat-num" id="stat-online-slaves">0</div>
+      <div class="stat-meta"><i data-lucide="cpu" style="width: 14px;"></i> Registered: <span id="stat-total-slaves">0</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Active Open Trades</div>
+      <div class="stat-num" id="stat-active-trades" style="color: var(--colors-primary);">0</div>
+      <div class="stat-meta"><i data-lucide="layers" style="width: 14px;"></i> Tracking Master Tickets</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Cloud Persistence</div>
+      <div class="stat-num" id="stat-supabase-connected">Supabase</div>
+      <div class="stat-meta"><i data-lucide="database" style="width: 14px;"></i> Realtime WebSockets</div>
+    </div>
+  </div>
+
+  <!-- Main Layout Grid -->
+  <div class="layout-grid">
+
+    <!-- Left Column -->
+    <div>
+      
+      <!-- Connected Slaves Matrix (Cream Card) -->
+      <section class="card-cream">
+        <div class="card-title-serif">
+          <span>Connected Slave VPS Terminals</span>
+          <button class="btn btn-secondary btn-sm" onclick="fetchDashboardData()">
+            <i data-lucide="refresh-cw" style="width: 14px;"></i> Refresh
+          </button>
+        </div>
+        <div class="slaves-grid" id="slaves-container">
+          <div style="color: var(--colors-muted); font-size: 14px;">Polling connected slave VPS instances...</div>
+        </div>
+      </section>
+
+      <!-- Active Master & Slave Open Positions (Dark Navy Product Card) -->
+      <section class="card-dark-navy">
+        <div class="card-title-serif card-title-dark">
+          <span>Active Master Open Positions</span>
+          <span class="badge-pill badge-coral" id="open-count-badge">0 Open</span>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="dark-table">
+            <thead>
+              <tr>
+                <th>Master Ticket</th>
+                <th>Symbol</th>
+                <th>Side</th>
+                <th>Volume</th>
+                <th>Open Price</th>
+                <th>SL / TP</th>
+                <th>Time</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="trades-tbody">
+              <tr>
+                <td colspan="8" style="text-align: center; color: var(--colors-on-dark-soft); padding: 24px;">
+                  No active open positions on Master terminal.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Right Column -->
+    <div>
+
+      <!-- Supabase Realtime Stream (Dark Code Card) -->
+      <section class="card-dark-navy">
+        <div class="card-title-serif card-title-dark" style="font-size: 22px;">
+          <span>Supabase Realtime Stream</span>
+          <i data-lucide="wifi" style="width: 18px; color: var(--colors-accent-teal);"></i>
+        </div>
+        <div class="code-terminal" id="realtime-stream">
+          <div>[System] Initializing Supabase Realtime WebSockets...</div>
+        </div>
+      </section>
+
+      <!-- Pending Remote Commands Queue (Cream Card) -->
+      <section class="card-cream">
+        <div class="card-title-serif" style="font-size: 22px;">
+          <span>Remote Commands Queue</span>
+        </div>
+        <div id="commands-container" style="font-size: 13px; color: var(--colors-body);">
+          <div style="color: var(--colors-muted);">No pending commands in queue.</div>
+        </div>
+      </section>
+
+    </div>
+
+  </div>
+
+  <!-- Credentials Modal -->
+  <div class="modal-overlay" id="config-modal">
+    <div class="modal-card">
+      <h3 style="font-family: var(--font-display); font-size: 26px; margin-bottom: 16px;">System Credentials</h3>
+      
+      <div class="input-field">
+        <label>Master VPS Relay URL</label>
+        <input type="text" id="cfg-relay-url" placeholder="http://3.11.8.205:8765 or /api">
+      </div>
+      
+      <div class="input-field">
+        <label>Relay API Key (X-API-Key)</label>
+        <input type="password" id="cfg-relay-key">
+      </div>
+
+      <div class="input-field">
+        <label>Supabase Project URL</label>
+        <input type="text" id="cfg-supabase-url" placeholder="https://your-project.supabase.co">
+      </div>
+
+      <div class="input-field">
+        <label>Supabase Anon Key</label>
+        <input type="password" id="cfg-supabase-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+        <button class="btn btn-secondary" onclick="closeModal('config-modal')">Cancel</button>
+        <button class="btn btn-coral" onclick="saveCredentials()">Save & Initialize</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // System Credentials State
+    let relayUrl = localStorage.getItem('RELAY_URL') || '/api';
+    let relayKey = localStorage.getItem('RELAY_KEY') || 'ahgcjhbckjhsafkhkfuablhfkakkscknalkn7jhg3gd';
+    let supabaseUrl = localStorage.getItem('SUPABASE_URL') || '';
+    let supabaseKey = localStorage.getItem('SUPABASE_KEY') || '';
+
+    let supabaseClient = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      initSupabase();
+      fetchDashboardData();
+      setInterval(fetchDashboardData, 3000);
+    });
+
+    function openModal(id) {
+      document.getElementById('cfg-relay-url').value = relayUrl;
+      document.getElementById('cfg-relay-key').value = relayKey;
+      document.getElementById('cfg-supabase-url').value = supabaseUrl;
+      document.getElementById('cfg-supabase-key').value = supabaseKey;
+      document.getElementById(id).classList.add('active');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function saveCredentials() {
+      relayUrl = document.getElementById('cfg-relay-url').value.trim();
+      relayKey = document.getElementById('cfg-relay-key').value.trim();
+      supabaseUrl = document.getElementById('cfg-supabase-url').value.trim();
+      supabaseKey = document.getElementById('cfg-supabase-key').value.trim();
+
+      localStorage.setItem('RELAY_URL', relayUrl);
+      localStorage.setItem('RELAY_KEY', relayKey);
+      localStorage.setItem('SUPABASE_URL', supabaseUrl);
+      localStorage.setItem('SUPABASE_KEY', supabaseKey);
+
+      closeModal('config-modal');
+      initSupabase();
+      fetchDashboardData();
+    }
+
+    function initSupabase() {
+      const streamBox = document.getElementById('realtime-stream');
+      if (supabaseUrl && supabaseKey && window.supabase) {
+        try {
+          supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+          document.getElementById('supabase-status-badge').innerText = 'Supabase Cloud Connected';
+
+          // Subscribe to Supabase Realtime Channels
+          supabaseClient
+            .channel('trade_events_channel')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'trade_events' }, payload => {
+              const ev = payload.new;
+              const logLine = document.createElement('div');
+              logLine.innerHTML = `<span style="color: var(--colors-primary);">[Realtime]</span> ${ev.type} ${ev.symbol} (${ev.side || ''}) ${ev.lot || ''} lots (Ticket #${ev.master_ticket})`;
+              streamBox.prepend(logLine);
+              fetchDashboardData();
+            })
+            .subscribe();
+
+          streamBox.innerHTML = `<div>[Supabase] Realtime WebSocket Channel Active</div>`;
+        } catch (e) {
+          console.error("Supabase Client Init Error:", e);
+          document.getElementById('supabase-status-badge').innerText = 'Supabase Init Failed';
+        }
+      } else {
+        document.getElementById('supabase-status-badge').innerText = 'Supabase Keys Missing';
+        streamBox.innerHTML = `<div>[Info] Set Supabase URL & Anon Key in Credentials menu to enable Cloud Persistence & WebSockets.</div>`;
+      }
+    }
+
+    async function apiFetch(endpoint, method = 'GET', body = null) {
+      const url = `${relayUrl}${endpoint}`;
+      const headers = {
+        'X-API-Key': relayKey,
+        'Content-Type': 'application/json'
+      };
+
+      const opts = { method, headers };
+      if (body) opts.body = JSON.stringify(body);
+
+      try {
+        const res = await fetch(url, opts);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (err) {
+        console.error(`API Error (${endpoint}):`, err);
+        return null;
+      }
+    }
+
+    async function fetchDashboardData() {
+      const summary = await apiFetch('/dashboard-summary');
+      if (!summary) {
+        document.getElementById('stat-master-status').innerText = 'OFFLINE';
+        document.getElementById('stat-master-status').style.color = 'var(--colors-error)';
+        return;
+      }
+
+      document.getElementById('stat-master-status').innerText = summary.server_status;
+      document.getElementById('stat-master-status').style.color = 'var(--colors-success)';
+      document.getElementById('stat-master-ip').innerText = summary.master_vps_ip;
+
+      document.getElementById('stat-online-slaves').innerText = summary.slave_counts.online;
+      document.getElementById('stat-total-slaves').innerText = summary.slave_counts.total;
+      document.getElementById('stat-active-trades').innerText = summary.active_trades.length;
+      document.getElementById('open-count-badge').innerText = `${summary.active_trades.length} Open`;
+
+      renderSlaves(summary.slaves);
+      renderTrades(summary.active_trades);
+      renderCommands(summary.pending_commands);
+    }
+
+    function renderSlaves(slaves) {
+      const container = document.getElementById('slaves-container');
+      if (!slaves || slaves.length === 0) {
+        container.innerHTML = `<div style="color: var(--colors-muted); font-size: 14px;">No Slave VPS terminals registered yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = slaves.map(s => `
+        <div class="slave-tile">
+          <div class="slave-tile-title" style="display: flex; justify-content: space-between;">
+            <span>${s.slave_id}</span>
+            <span class="badge-pill ${s.status === 'ONLINE' ? 'badge-teal' : 'badge-amber'}">${s.status}</span>
+          </div>
+          <div class="slave-tile-row"><span>IP:</span> <strong>${s.ip_address || 'Unknown'}</strong></div>
+          <div class="slave-tile-row"><span>Symbol:</span> <strong>${s.symbol || 'N/A'}</strong></div>
+          <div class="slave-tile-row"><span>Account:</span> <strong>${s.account_info || 'MT5 Account'}</strong></div>
+          <div class="slave-tile-row"><span>Heartbeat:</span> <strong>${s.last_seen_seconds_ago}s ago</strong></div>
+          
+          <div style="display: flex; gap: 8px; margin-top: 12px;">
+            <button class="btn btn-secondary btn-sm" onclick="postCommand('${s.slave_id}', 'PAUSE')">⏸ Pause</button>
+            <button class="btn btn-secondary btn-sm" onclick="postCommand('${s.slave_id}', 'RESUME')">▶ Resume</button>
+            <button class="btn btn-coral btn-sm" onclick="postCommand('${s.slave_id}', 'CLOSE_ALL')">Stop All</button>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function renderTrades(trades) {
+      const tbody = document.getElementById('trades-tbody');
+      if (!trades || trades.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--colors-on-dark-soft); padding: 24px;">No active open positions on Master terminal.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = trades.map(t => `
+        <tr>
+          <td><strong>#${t.master_ticket}</strong></td>
+          <td>${t.symbol}</td>
+          <td><span class="badge-pill ${t.side === 'BUY' ? 'badge-teal' : 'badge-amber'}">${t.side}</span></td>
+          <td>${t.lot} lots</td>
+          <td>${t.price}</td>
+          <td>SL: ${t.sl || 0} / TP: ${t.tp || 0}</td>
+          <td style="font-size: 12px; color: var(--colors-on-dark-soft);">${t.trade_time || 'Live'}</td>
+          <td>
+            <button class="btn btn-dark btn-sm" onclick="postCommand('ALL', 'CLOSE_TICKET', { master_ticket: ${t.master_ticket} })">
+              Close Ticket
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderCommands(cmds) {
+      const container = document.getElementById('commands-container');
+      if (!cmds || cmds.length === 0) {
+        container.innerHTML = `<div style="color: var(--colors-muted);">No pending commands in queue.</div>`;
+        return;
+      }
+
+      container.innerHTML = cmds.map(c => `
+        <div style="padding: 8px 0; border-bottom: 1px solid var(--colors-hairline);">
+          [#${c.id}] <strong>${c.action}</strong> $\rightarrow$ ${c.target_slave_id} (${c.status})
+        </div>
+      `).join('');
+    }
+
+    async function postCommand(targetSlaveId, action, params = {}) {
+      if (!confirm(`Are you sure you want to issue '${action}' to target: ${targetSlaveId}?`)) return;
+
+      const res = await apiFetch('/command', 'POST', {
+        target_slave_id: targetSlaveId,
+        action: action,
+        params: params
+      });
+
+      if (res && res.status === 'ok') {
+        alert(`Command #${res.command_id} (${action}) queued successfully!`);
+        fetchDashboardData();
+      } else {
+        alert(`Failed to queue command: ${res ? res.error : 'Network Error'}`);
+      }
+    }
+
+    async function triggerEmergencyKill() {
+      if (!confirm("🚨 EMERGENCY KILL SWITCH!\n\nThis will instantly CLOSE ALL POSITIONS and PAUSE all connected Slave VPS instances!\n\nProceed?")) return;
+
+      await postCommand('ALL', 'EMERGENCY_KILL');
+    }
+  </script>
+</body>
+</html>
