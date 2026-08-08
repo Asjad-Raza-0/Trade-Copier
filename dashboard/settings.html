@@ -42,6 +42,27 @@
       --rounded-pill: 9999px;
     }
 
+    /* Dark Mode Design System Tokens */
+    [data-theme="dark"] {
+      --colors-canvas: #0e0d0c;
+      --colors-ink: #f3efe6;
+      --colors-body: #c2bcae;
+      --colors-body-strong: #e6e0d2;
+      --colors-muted: #8e887d;
+      --colors-muted-soft: #6e695e;
+      --colors-hairline: #2a2824;
+      --colors-hairline-soft: #22201d;
+      --colors-surface-soft: #141311;
+      --colors-surface-card: #181715;
+      --colors-surface-cream-strong: #24221f;
+      --colors-surface-dark: #121110;
+      --colors-surface-dark-elevated: #1d1c1a;
+      --colors-surface-dark-soft: #0a0a09;
+      --colors-on-primary: #ffffff;
+      --colors-on-dark: #f3efe6;
+      --colors-on-dark-soft: #8e887d;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -225,6 +246,19 @@
     .badge-teal { background: rgba(93, 184, 166, 0.2); color: var(--colors-accent-teal); border: 1px solid rgba(93, 184, 166, 0.3); }
     .badge-amber { background: rgba(232, 165, 90, 0.2); color: var(--colors-accent-amber); border: 1px solid rgba(232, 165, 90, 0.3); }
     .badge-error { background: rgba(198, 69, 69, 0.2); color: var(--colors-error); border: 1px solid rgba(198, 69, 69, 0.3); }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 900px) {
+      body { padding: 16px 12px; }
+      .top-nav { flex-direction: column; gap: 16px; align-items: stretch; padding: 16px; }
+      .brand-group { justify-content: center; }
+      .nav-links { justify-content: center; overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; }
+      .grid-2 { grid-template-columns: 1fr !important; }
+    }
+    @media (max-width: 550px) {
+      .nav-tab { padding: 6px 10px; font-size: 13px; }
+      .btn { padding: 8px 12px; font-size: 13px; }
+    }
   </style>
 </head>
 <body>
@@ -243,7 +277,10 @@
       <a href="analytics.html" class="nav-tab">📈 Trade Analytics</a>
     </div>
 
-    <div>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <button class="btn btn-secondary" id="theme-toggle-btn" onclick="toggleTheme()" style="height: 34px; padding: 4px 12px; font-size: 13px;">
+        <i data-lucide="moon" style="width: 14px;"></i> Dark
+      </button>
       <span class="badge-pill badge-teal" id="vps-nav-status">
         <i data-lucide="server" style="width: 14px;"></i> VPS Configured
       </span>
@@ -333,9 +370,34 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
       lucide.createIcons();
       loadSettings();
     });
+
+    function initTheme() {
+      const saved = localStorage.getItem('THEME') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', saved);
+      updateThemeBtn(saved);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('THEME', next);
+      updateThemeBtn(next);
+    }
+
+    function updateThemeBtn(theme) {
+      const btn = document.getElementById('theme-toggle-btn');
+      if (btn) {
+        btn.innerHTML = theme === 'dark' 
+          ? `<i data-lucide="sun" style="width: 14px; color: var(--colors-accent-amber);"></i> Light` 
+          : `<i data-lucide="moon" style="width: 14px; color: var(--colors-accent-teal);"></i> Dark`;
+        if (window.lucide) lucide.createIcons();
+      }
+    }
 
     function loadSettings() {
       document.getElementById('vps-url-input').value = localStorage.getItem('RELAY_URL') || window.APP_CONFIG.getRelayUrl();
