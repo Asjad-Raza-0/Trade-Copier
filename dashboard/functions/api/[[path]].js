@@ -56,7 +56,7 @@ export async function onRequest(context) {
     // Create CORS compliant response back to frontend
     const finalHeaders = new Headers(response.headers);
     finalHeaders.set("Access-Control-Allow-Origin", "*");
-    finalHeaders.set("Access-Control-Allow-Headers": "Content-Type, X-API-Key, Authorization");
+    finalHeaders.set("Access-Control-Allow-Headers", "Content-Type, X-API-Key, Authorization");
     finalHeaders.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 
     return new Response(responseData, {

@@ -24,8 +24,10 @@ dashboard/
 2. Log into **[Cloudflare Dashboard](https://dash.cloudflare.com/)** $\rightarrow$ **Workers & Pages** $\rightarrow$ **Create application** $\rightarrow$ **Pages**.
 3. Select **Connect to Git** and pick your GitHub repository.
 4. Set **Build settings**:
+   - **Root directory**: `dashboard` *(Recommended)*
    - **Framework preset**: `None`
-   - **Build output directory**: `dashboard`
+   - **Build command**: *(leave empty)*
+   - **Build output directory**: `.` *(if Root directory is `dashboard`)* OR `dashboard` *(if Root directory is `/`)*
 5. Click **Save and Deploy**.
 6. Under **Settings** $\rightarrow$ **Environment variables**, set:
    - `RELAY_SERVER_URL`: `http://3.11.8.205:8765`
