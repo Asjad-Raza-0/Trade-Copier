@@ -360,11 +360,12 @@
       const relayUrl = localStorage.getItem('RELAY_URL') || (window.APP_CONFIG ? window.APP_CONFIG.getRelayUrl() : '/api');
       const relayKey = localStorage.getItem('RELAY_KEY') || (window.APP_CONFIG ? window.APP_CONFIG.getRelayKey() : 'ahgcjhbckjhsafkhkfuablhfkakkscknalkn7jhg3gd');
 
-      let baseUrl = relayUrl;
+      let baseUrl = relayUrl || '/api';
       if (window.location.protocol === 'https:' && baseUrl.startsWith('http://')) {
         baseUrl = '/api';
       }
 
+      baseUrl = baseUrl.replace(/\/+$/, '');
       const targetEndpoint = baseUrl.endsWith('/api') ? `${baseUrl}/dashboard-summary` : `${baseUrl}/api/dashboard-summary`;
 
       try {

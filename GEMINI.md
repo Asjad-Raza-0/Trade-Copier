@@ -1,5 +1,7 @@
 # 🌟 Gold Trade Copier — Comprehensive System Specification & Developer Handbook (GEMINI.md)
 
+-This project is deployed in cloudflare workers, under "https://trade-copier.asjadraza.workers.dev/"
+
 Welcome to the **Gold Trade Copier** repository. This document serves as an exhaustive reference guide detailing system architecture, features, troubleshooting directory, security policies, and safe GitHub deployment workflows.
 
 ---

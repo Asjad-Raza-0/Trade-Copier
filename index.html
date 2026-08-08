@@ -802,11 +802,21 @@
     }
 
     async function apiFetch(endpoint, method = 'GET', body = null) {
-      let baseUrl = relayUrl;
+      let baseUrl = relayUrl || '/api';
+      
       if (window.location.protocol === 'https:' && baseUrl.startsWith('http://')) {
         baseUrl = '/api';
       }
-      const url = `${baseUrl}${endpoint}`;
+
+      baseUrl = baseUrl.replace(/\/+$/, '');
+      let cleanEndpoint = endpoint.startsWith('/') ? endpoint : '/' + endpoint;
+
+      if (baseUrl.endsWith('/api') && cleanEndpoint.startsWith('/api/')) {
+        cleanEndpoint = cleanEndpoint.substring(4);
+      }
+      
+      const url = `${baseUrl}${cleanEndpoint}`;
+
       const headers = {
         'X-API-Key': relayKey,
         'Content-Type': 'application/json'
@@ -817,10 +827,13 @@
 
       try {
         const res = await fetch(url, opts);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+          console.warn(`API HTTP ${res.status} for ${url}`);
+          return null;
+        }
         return await res.json();
       } catch (err) {
-        console.error(`API Error (${endpoint}):`, err);
+        console.error(`API Fetch Error for ${url}:`, err);
         return null;
       }
     }

@@ -456,12 +456,13 @@
       const url = document.getElementById('vps-url-input').value.trim();
       const key = document.getElementById('vps-key-input').value.trim();
 
-      let fetchUrl = url;
+      let fetchUrl = url || '/api';
       if (window.location.protocol === 'https:' && url.startsWith('http://')) {
         logDiag(`[Security Proxy] HTTPS site detected. Routing via Cloudflare Edge Proxy (/api) to prevent browser Mixed Content block...`);
         fetchUrl = '/api';
       }
 
+      fetchUrl = fetchUrl.replace(/\/+$/, '');
       logDiag(`[Ping] Testing Master VPS connection to ${fetchUrl}...`);
       const badge = document.getElementById('diag-badge');
       badge.innerText = 'Pinging...';
@@ -480,22 +481,23 @@
           const data = await res.json();
           badge.innerText = 'ONLINE';
           badge.className = 'badge-pill badge-teal';
-          logDiag(`[Success] Connected! HTTP 200 OK (${latency}ms latency)`);
-          logDiag(`[Master VPS] IP: ${data.master_vps_ip || 'Connected'}, Active Trades: ${data.active_trades ? data.active_trades.length : 0}`);
+          logDiag(`[Success] Connected to Master VPS Relay! HTTP 200 OK (${latency}ms latency)`);
+          logDiag(`[Master VPS] IP: ${data.master_vps_ip || 'Connected'}, Active Trades: ${data.active_trades ? data.active_trades.length : 0}, Active Slaves: ${data.slave_counts ? data.slave_counts.online : 0}`);
         } else if (res.status === 401) {
           badge.innerText = 'UNAUTHORIZED';
           badge.className = 'badge-pill badge-error';
-          logDiag(`[Error] HTTP 401 Unauthorized — Incorrect Relay API Key!`);
+          logDiag(`[Error] HTTP 401 Unauthorized — Incorrect Relay API Key! Verify X-API-Key.`);
         } else {
           badge.innerText = `HTTP ${res.status}`;
           badge.className = 'badge-pill badge-error';
-          logDiag(`[Error] Master Relay returned status ${res.status}`);
+          logDiag(`[Error] Master Relay returned status HTTP ${res.status}`);
         }
       } catch (err) {
         badge.innerText = 'OFFLINE';
         badge.className = 'badge-pill badge-error';
-        logDiag(`[Failure] Could not reach Master VPS (${err.message})`);
-        logDiag(`[Help] Cloudflare Edge Proxy attempted to reach Master VPS (${url}). Ensure relay_server.py is running on port 8765 and firewall port 8765 is allowed in AWS / VPS security rules.`);
+        logDiag(`[Failure] Could not reach Master VPS Relay (${err.message})`);
+        logDiag(`[Help 1] Check if python relay_server.py is running on your Master VPS (3.11.8.205).`);
+        logDiag(`[Help 2] Ensure Inbound TCP port 8765 is allowed in your AWS Security Group / VPS Firewall.`);
       }
     }
 

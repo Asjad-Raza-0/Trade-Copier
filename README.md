@@ -59,6 +59,8 @@ flowchart TD
 
 ---
 
+-This project is deployed in cloudflare workers, under "https://trade-copier.asjadraza.workers.dev/"
+
 ## 📁 Repository Sitemap
 
 ```text

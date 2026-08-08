@@ -11,13 +11,11 @@ export async function onRequest(context) {
   const queryString = url.search;
 
   // Master VPS Endpoint configuration (can be overridden via Cloudflare Environment Variable RELAY_SERVER_URL)
-  const targetBase = env.RELAY_SERVER_URL || "http://3.11.8.205:8765";
+  const targetBase = (env.RELAY_SERVER_URL || "http://3.11.8.205:8765").replace(/\/+$/, '');
   
-  // Handle /api/dashboard-summary, /api/command, /slaves, /health, /events etc.
+  // Forward request to Master VPS Relay Server
   let targetUrl = `${targetBase}/api${subPath}${queryString}`;
-  
-  // Special routes mapping
-  if (subPath === '/slaves' || subPath === '/health' || subPath === '/events' || subPath === '/trade') {
+  if (subPath === '/slaves' || subPath === '/health' || subPath === '/events' || subPath === '/trade' || subPath === '/poll' || subPath === '/purge') {
     targetUrl = `${targetBase}${subPath}${queryString}`;
   }
 

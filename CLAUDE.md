@@ -1,5 +1,7 @@
 # 🤖 Claude Developer Handbook & Reference Guide (CLAUDE.md)
 
+-This project is deployed in cloudflare workers, under "https://trade-copier.asjadraza.workers.dev/"
+
 This handbook provides a structured reference for Claude AI agents working on the **Gold Trade Copier** project repository.
 
 ---

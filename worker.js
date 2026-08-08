@@ -24,7 +24,7 @@ async function handleApiProxy(request, env, url) {
     });
   }
 
-  const targetBase = env.RELAY_SERVER_URL || 'http://3.11.8.205:8765';
+  const targetBase = (env.RELAY_SERVER_URL || 'http://3.11.8.205:8765').replace(/\/+$/, '');
   const subPath = url.pathname.replace(/^\/api/, '');
   const queryString = url.search;
 

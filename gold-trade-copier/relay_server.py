@@ -41,7 +41,13 @@ MASTER_VPS_IP = "3.11.8.205"
 MASTER_SYMBOL = "ALL"
 
 # Supabase Cloud Configuration
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "").strip()
+# The supabase-py client expects the project base URL only (e.g. https://xyz.supabase.co).
+# It appends /rest/v1/ internally, so strip it here if the env var includes it by mistake.
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "").strip().rstrip("/")
+for _suffix in ("/rest/v1", "/rest", "/v1"):
+    if SUPABASE_URL.endswith(_suffix):
+        SUPABASE_URL = SUPABASE_URL[: -len(_suffix)].rstrip("/")
+        break
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", os.environ.get("SUPABASE_ANON_KEY", os.environ.get("SUPABASE_SERVICE_KEY", ""))).strip()
 
 supabase_client = None
@@ -251,6 +257,7 @@ def update_slave_status(slave_id, last_event_id, ip_address, symbol="", account_
 
 
 @app.route("/health", methods=["GET"])
+@app.route("/api/health", methods=["GET"])
 def health():
     now = time.time()
     conn = get_db()
@@ -279,6 +286,7 @@ def health():
 
 
 @app.route("/trade", methods=["POST"])
+@app.route("/api/trade", methods=["POST"])
 def submit_trade():
     if not check_key():
         return jsonify({"error": "unauthorized"}), 401
@@ -323,6 +331,7 @@ def submit_trade():
     return jsonify({"status": "ok", "id": new_id})
 
 
+@app.route("/analytics", methods=["GET"])
 @app.route("/api/analytics", methods=["GET"])
 def get_analytics():
     """Calculates P&L metrics, lot volume breakdown, and Supabase cloud sync status."""
@@ -361,6 +370,7 @@ def get_analytics():
 
 
 @app.route("/poll", methods=["GET"])
+@app.route("/api/poll", methods=["GET"])
 def poll():
     if not check_key():
         return jsonify({"error": "unauthorized"}), 401
@@ -445,6 +455,7 @@ def poll():
 
 
 @app.route("/slaves", methods=["GET"])
+@app.route("/api/slaves", methods=["GET"])
 def list_slaves():
     if not check_key():
         return jsonify({"error": "unauthorized"}), 401
@@ -479,6 +490,7 @@ def list_slaves():
 
 
 @app.route("/events", methods=["GET"])
+@app.route("/api/events", methods=["GET"])
 def get_events():
     if not check_key():
         return jsonify({"error": "unauthorized"}), 401
@@ -492,6 +504,7 @@ def get_events():
     return jsonify(events)
 
 
+@app.route("/dashboard-summary", methods=["GET"])
 @app.route("/api/dashboard-summary", methods=["GET"])
 def dashboard_summary():
     """Consolidated endpoint for Web Dashboard live overview."""
@@ -576,6 +589,7 @@ def dashboard_summary():
     })
 
 
+@app.route("/command", methods=["POST"])
 @app.route("/api/command", methods=["POST"])
 def post_command():
     """Web Dashboard posts remote actions for Slave VPS EA(s)."""
@@ -603,6 +617,7 @@ def post_command():
     return jsonify({"status": "ok", "command_id": cmd_id, "action": action, "target": target_slave})
 
 
+@app.route("/slave-commands", methods=["GET"])
 @app.route("/api/slave-commands", methods=["GET"])
 def poll_slave_commands():
     """Slave EA polls for unexecuted commands addressed to it or 'ALL'."""
@@ -634,6 +649,7 @@ def poll_slave_commands():
     return jsonify({"commands": commands})
 
 
+@app.route("/command-ack", methods=["POST"])
 @app.route("/api/command-ack", methods=["POST"])
 def ack_command():
     """Slave EA reports command execution completion status back to server."""
@@ -657,6 +673,7 @@ def ack_command():
 
 
 @app.route("/purge", methods=["POST", "GET"])
+@app.route("/api/purge", methods=["POST", "GET"])
 def manual_purge():
     if not check_key():
         return jsonify({"error": "unauthorized"}), 401

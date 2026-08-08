@@ -4,6 +4,8 @@ Welcome! This guide is written so **anyone (even an 18-year-old student setting 
 
 ---
 
+-This project is deployed in cloudflare workers, under "https://trade-copier.asjadraza.workers.dev/"
+
 ## 📌 Master Setup Reference Quick Sheet
 
 | Resource | Value / Setting |
