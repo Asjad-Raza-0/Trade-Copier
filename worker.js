@@ -42,7 +42,8 @@ async function handleApiProxy(request, env, url) {
     const key = env.RELAY_API_KEY || 'ahgcjhbckjhsafkhkfuablhfkakkscknalkn7jhg3gd';
     newHeaders.set('X-API-Key', key);
   }
-  newHeaders.set('Host', new URL(targetBase).host);
+  newHeaders.delete('Host');
+  newHeaders.delete('host');
 
   const init = { method: request.method, headers: newHeaders };
   if (['POST', 'PUT', 'PATCH'].includes(request.method)) {

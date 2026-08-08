@@ -37,7 +37,8 @@ export async function onRequest(context) {
     if (!newHeaders.has("X-API-Key") && env.RELAY_API_KEY) {
       newHeaders.set("X-API-Key", env.RELAY_API_KEY);
     }
-    newHeaders.set("Host", new URL(targetBase).host);
+    newHeaders.delete("Host");
+    newHeaders.delete("host");
 
     const init = {
       method: request.method,
