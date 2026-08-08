@@ -1,0 +1,12 @@
+name = "trade-copier"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Serve all static files (index.html, settings.html, analytics.html, config.js)
+[assets]
+directory = "."
+binding = "ASSETS"
+
+[vars]
+RELAY_SERVER_URL = "http://3.11.8.205:8765"

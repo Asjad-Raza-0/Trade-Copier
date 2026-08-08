@@ -1,0 +1,13 @@
+gold-trade-copier/
+Telegram Notifier/
+Resources/
+.git/
+*.py
+*.mq5
+*.db
+*.sql
+*.md
+requirements.txt
+GEMINI.md
+CLAUDE.md
+README.md
