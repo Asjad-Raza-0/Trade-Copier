@@ -196,42 +196,165 @@ npx wrangler pages deploy . --project-name gold-trade-copier
 
 ---
 
-## Remote Controls & Web Dashboard Usage Guide
+## Web Dashboard — Complete Feature Reference
 
-Open your live dashboard website (`https://your-app.pages.dev`):
+The dashboard is a 3-page web application deployed on Cloudflare Pages. Open it at your Cloudflare Pages URL (e.g. `https://your-app.pages.dev`).
 
-1. **Configure Credentials**:
-   - Click **Credentials** button at the top right.
-   - Paste your Master VPS Relay URL (`/api` or `http://3.11.8.205:8765`), API Key, Supabase URL, and Supabase Anon Key.
-   - Click **Save & Initialize**.
-2. **Monitor Slave Terminals**:
-   - View live cards for all registered Slave VPS terminals with IP, broker symbol, and heartbeat latency.
-3. **Pause / Resume Slave Copying**:
-   - Click **⏸ Pause** on any slave card to freeze trade copying on that specific terminal without closing MT5.
-   - Click **▶ Resume** to unfreeze.
-4. **Close Active Master Trades**:
-   - In the **Active Master Open Positions** table, click **Close Ticket** next to any trade to close it remotely on slave accounts.
-5. **Emergency Kill Switch**:
-   - Click the bright coral **Emergency Stop** button at the top right to instantly close all open positions and pause copying across all online slave VPS terminals.
+---
+
+### First-Time Connection (Do This First)
+
+Before any data loads you must enter your credentials once. They are saved in your browser's `localStorage` and persist across page refreshes.
+
+1. Click **Credentials** (top-right of any page).
+2. Fill in the four fields:
+
+   | Field | What to enter |
+   |---|---|
+   | **Master VPS Relay URL** | If on Cloudflare Pages (HTTPS site): enter `/api` — the Cloudflare Edge Proxy forwards it to your VPS automatically. If testing locally from a file: enter `http://3.11.8.205:8765` |
+   | **Relay API Key** | `ahgcjhbckjhsafkhkfuablhfkakkscknalkn7jhg3gd` (default — change in `relay_server.py` for production) |
+   | **Supabase Project URL** | Your Supabase project URL e.g. `https://xyzproject.supabase.co` |
+   | **Supabase Anon Key** | Your Supabase `anon / public` key (starts with `eyJ...`) |
+
+3. Click **Save & Initialize**.
+4. The page auto-refreshes data. If the Master VPS Status card turns **ONLINE** (green), you are connected.
+
+> **Important:** If you are on the live HTTPS Cloudflare Pages site, always use `/api` as the relay URL — never `http://...`. Browsers block HTTP requests from HTTPS pages (Mixed Content policy). The Cloudflare Edge Function at `functions/api/[[path]].js` transparently proxies `/api/*` to your VPS for you.
+
+---
+
+### Admin PIN Security
+
+Destructive actions (Emergency Stop, Pause/Resume Slave, Close Ticket, Save Settings) are protected by a 4-digit PIN.
+
+- **Default PIN**: `7890` (change in `config.js` → `DEFAULT_ADMIN_PIN`)
+- On first protected action you are prompted for the PIN once per browser session.
+- Once authenticated, the session stays unlocked until the browser tab is closed.
+- The Settings page shows a badge: **Admin Authenticated** (teal) or **Guest Mode — Read Only** (amber).
+
+---
+
+### Page 1 — Command Center (`index.html`)
+
+The main live-monitoring overview. Auto-refreshes every 3 seconds.
+
+#### Top Navigation Bar
+| Element | Description |
+|---|---|
+| **Live Master Sync** badge | Teal pill shown when data is fetching. Turns red/offline if VPS unreachable. |
+| **Dark / Light** toggle | Switches between Obsidian Dark and Warm Cream themes. State saved in `localStorage`. |
+| **Credentials** button | Opens the credentials modal to update VPS/Supabase keys. |
+| **Emergency Stop** button | Issues an `EMERGENCY_KILL` command to ALL connected slave terminals — closes all open positions and pauses copying instantly. Requires Admin PIN. |
+
+#### Status Cards (4 tiles at the top)
+| Card | What it shows |
+|---|---|
+| **Master VPS Status** | ONLINE (green) or OFFLINE (red). Updates every 3s by pinging `/api/dashboard-summary`. |
+| **Online Slave Terminals** | Count of slaves that sent a heartbeat in the last 30 seconds vs total registered. |
+| **Active Open Trades** | Count of currently open master positions being copied. |
+| **Cloud Persistence** | Shows "Connected" when Supabase is initialized, "Not Configured" if keys are missing. |
+
+#### Connected Slave VPS Terminals (left card)
+A tile is rendered for each Slave EA that has ever polled the relay server. Each tile shows:
+- **Slave ID** — the unique name set in `SlaveID` EA input
+- **Status badge** — ONLINE (teal, seen < 30s ago), STALE (amber, 30–300s), OFFLINE (grey, > 300s)
+- **IP Address** — the slave VPS public IP
+- **Symbol** — the broker symbol the slave EA is trading (e.g. `XAUUSD`)
+- **Account Info** — MT5 account number (sent by EA)
+- **Heartbeat** — seconds since last poll
+
+**Per-slave action buttons** (require Admin PIN):
+- **Pause** — queues a `PAUSE` command; the slave EA picks it up on next poll and stops copying new trades
+- **Resume** — queues a `RESUME` command to re-enable copying
+- **Stop All** — queues a `CLOSE_ALL` command to close all open positions on that specific slave
+
+#### Active Master Open Positions (dark table)
+Lists all trades currently open on the Master MT5 account (calculated from the relay server's event log). Columns:
+- Master Ticket number
+- Symbol, Side (BUY/SELL badge), Volume in lots
+- Open Price, SL / TP levels
+- Trade timestamp
+- **Close Ticket** button — sends a `CLOSE_TICKET` command targeting the specific ticket number to all slaves (Admin PIN required)
+
+#### Supabase Realtime Stream (right panel)
+A live terminal window that shows new trade events the moment they are inserted into Supabase PostgreSQL via WebSocket. Each line shows: event type, symbol, side, lots, and master ticket. Requires Supabase keys to be configured.
+
+#### Remote Commands Queue (right panel)
+Shows all pending commands in the relay server's `commands` table (PAUSE, RESUME, CLOSE_ALL, EMERGENCY_KILL, CLOSE_TICKET). Clears automatically once the slave EA acknowledges each command.
+
+---
+
+### Page 2 — VPS & System Settings (`settings.html`)
+
+Configure and test your connection without touching code.
+
+#### Master VPS Connection form
+- Edit Relay URL, API Key, Supabase URL, and Supabase Anon Key.
+- **Save Settings** — persists to `localStorage` and immediately runs a connection test (Admin PIN required).
+- **Test VPS Connection** — pings `/api/dashboard-summary`, measures latency in ms, and shows the result in the diagnostic terminal. No PIN required to test.
+
+#### Live Diagnostic Terminal
+A scrolling log that shows timestamped connection test results:
+- HTTP status and latency on success
+- `HTTP 401 Unauthorized` if API key is wrong
+- `OFFLINE` with error message if VPS unreachable or proxy fails
+
+#### Auth Status Badge
+Top-right badge switches between:
+- **Admin Authenticated** (teal, unlocked icon) — PIN entered this session
+- **Guest Mode — Read Only** (amber, lock icon) — not yet authenticated
+
+---
+
+### Page 3 — Trade Analytics (`analytics.html`)
+
+Historical analysis of all replicated trades stored in the relay server's SQLite database.
+
+#### Metrics Row (4 cards)
+| Card | What it shows |
+|---|---|
+| **Total Copied Volume** | Sum of all lot sizes across every recorded trade event |
+| **Avg Execution Latency** | Fixed at ~24ms (live latency tracking requires Supabase) |
+| **Total Replicated Trades** | Count of trade events fetched from `/api/dashboard-summary` |
+| **Replication Success Rate** | Displayed as 100% when no errors are recorded |
+
+#### Master Trade Replication History (dark table)
+Fetches `recent_events` from `/api/dashboard-summary` and renders one row per trade event. Shows: master ticket, event type (ORDER_OPEN / CLOSE / MODIFY), symbol, side, lot size, execution price, SL/TP, and status badge. Falls back to sample rows if the VPS is unreachable. **Refresh Log** button re-fetches on demand.
 
 ---
 
 ## Troubleshooting & Quick Fixes
 
-### Problem 1: `Relay returned HTTP 401`
-- **Cause**: Incorrect API Key sent by Slave EA or old python process locking port.
-- **Fix**: Open Command Prompt as Administrator on Master VPS and run:
+### Problem 1: Master VPS Status shows OFFLINE / `Failed to fetch`
+- **Cause A**: Using `http://3.11.8.205:8765` directly on an HTTPS Cloudflare Pages site — browser blocks Mixed Content.
+- **Fix A**: Set Relay URL to `/api` in the Credentials modal. The Cloudflare Edge Proxy will route it.
+- **Cause B**: `relay_server.py` is not running on Master VPS.
+- **Fix B**: RDP into Master VPS, open Command Prompt and run:
   ```cmd
-  taskkill /F /IM python.exe
   nssm restart GoldRelayServer
   ```
+  Or manually: `cd C:\GoldRelay && python relay_server.py`
+- **Cause C**: Port 8765 blocked in firewall.
+- **Fix C**: AWS Security Group or VPS firewall — add Inbound rule TCP port 8765 from `0.0.0.0/0`.
 
-### Problem 2: `WebRequest failed, error 4060` or `error 1001`
-- **Cause**: URL missing from MT5's Allowed WebRequest URL list.
-- **Fix**: In MT5, go to **Tools > Options > Expert Advisors** $\rightarrow$ Check **Allow WebRequest for listed URL** $\rightarrow$ Add `http://3.11.8.205:8765`.
+### Problem 2: `HTTP 401 Unauthorized`
+- **Cause**: API Key in dashboard does not match `API_KEY` in `relay_server.py`.
+- **Fix**: Confirm the key in Settings matches exactly: `ahgcjhbckjhsafkhkfuablhfkakkscknalkn7jhg3gd`
 
-### Problem 3: Supabase Realtime Stream says `Supabase Keys Missing`
-- **Fix**: Click **Credentials** in top right of the Web Dashboard and paste your Supabase Project URL (`https://xyz.supabase.co`) and Anon Key. Click **Save & Initialize**.
+### Problem 3: `HTTP 502 Bad Gateway` from Cloudflare
+- **Cause**: Cloudflare Edge Proxy reached your domain but the VPS relay was unreachable.
+- **Fix**: Verify `relay_server.py` is running and port 8765 is open. Check Cloudflare Pages environment variable `RELAY_SERVER_URL` is set to `http://3.11.8.205:8765`.
+
+### Problem 4: Supabase Realtime Stream shows `Not Configured`
+- **Fix**: Click **Credentials**, paste your Supabase Project URL (`https://xyz.supabase.co`) and Anon Key, click **Save & Initialize**.
+
+### Problem 5: MT5 EA `WebRequest failed, error 4060`
+- **Cause**: URL not whitelisted in MT5 options.
+- **Fix**: In MT5 go to **Tools > Options > Expert Advisors**, check **Allow WebRequest for listed URL**, add `http://3.11.8.205:8765`.
+
+### Problem 6: Slave tiles show STALE or OFFLINE
+- **Cause**: Slave EA is not polling (MT5 Algo Trading is paused, EA removed from chart, or VPS restarted).
+- **Fix**: On the Slave VPS MT5, ensure the green **Algo Trading** button is active and `GoldSlaveRelay` EA is attached to a chart with `RelayURL = http://3.11.8.205:8765`.
 
 ---
 
